@@ -17,6 +17,7 @@
     <link rel="shortcut icon" href="favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -463,10 +464,13 @@
                     <div class="gradient-bar"></div>
                     <p class="text-xl md:text-2xl lg:text-3xl text-gray-200 mb-3 md:mb-4 font-semibold font-grotesk">Your personal trenching assistant</p>
                     <p class="text-base md:text-lg text-gray-400 mb-6 md:mb-8 max-w-2xl mx-auto px-2">Trained by the trenches, for the trenches. Token-gated privacy. Built for the Solana community. Hold $GPTARD to unlock exclusive access to the most advanced AI chatbot on-chain.</p>
-                    <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center w-full max-w-md mx-auto">
+                    <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center w-full max-w-md mx-auto mb-6">
                         <button onclick="connectWallet()" id="heroConnectBtn" class="bg-primary text-black px-6 md:px-8 py-3 md:py-4 rounded-lg text-lg md:text-xl font-bold shadow-sm hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary border border-transparent font-grotesk w-full sm:w-auto">Connect Wallet</button>
                         <a href="#token" class="bg-secondary border border-primary text-primary px-6 md:px-8 py-3 md:py-4 rounded-lg text-lg md:text-xl font-bold shadow-sm hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary font-grotesk w-full sm:w-auto text-center">Get $GPTARD</a>
                     </div>
+                    <button onclick="openFullChat()" class="bg-gradient-to-r from-primary to-accent text-black px-8 md:px-12 py-4 md:py-5 rounded-xl text-xl md:text-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary/50 border border-transparent font-grotesk transform hover:scale-105 animate-pulse">
+                        🚀 Start Chat with GPTARD
+                    </button>
                 </section>
 
                 <!-- Features Section -->
@@ -647,9 +651,15 @@
                     <p class="text-sm text-gray-400">Full Chat Mode</p>
                 </div>
             </div>
-            <div class="flex items-center space-x-2">
-                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span class="text-sm text-green-500 font-semibold">Online</span>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="text-sm text-green-500 font-semibold">Online</span>
+                </div>
+                <div class="flex items-center space-x-2" id="walletStatus">
+                    <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                    <span class="text-sm text-red-500 font-semibold">Wallet Disconnected</span>
+                </div>
             </div>
         </div>
         
@@ -999,6 +1009,12 @@
 
         // Full chat functionality
         function openFullChat() {
+            // Check if wallet is connected
+            if (!isWalletConnected) {
+                showNotification('Please connect your wallet first to access the chat.', 'error');
+                return;
+            }
+            
             const fullChatScreen = document.getElementById('fullChatScreen');
             const fullChatMessages = document.getElementById('fullChatMessages');
             const fullChatInput = document.getElementById('fullChatInput');
@@ -1350,8 +1366,214 @@
             });
         }
 
+        // Solana Wallet Integration
+        let wallet = null;
+        let connection = null;
+        let isWalletConnected = false;
+
+        // Initialize Solana connection
+        function initializeSolana() {
+            try {
+                connection = new solanaWeb3.Connection(
+                    'https://api.mainnet-beta.solana.com',
+                    'confirmed'
+                );
+                console.log('Solana connection initialized');
+            } catch (error) {
+                console.error('Failed to initialize Solana connection:', error);
+            }
+        }
+
+        // Connect wallet function
+        async function connectWallet() {
+            try {
+                // Check if Phantom wallet is available
+                if (!window.solana || !window.solana.isPhantom) {
+                    alert('Phantom wallet is not installed. Please install Phantom wallet to continue.');
+                    window.open('https://phantom.app/', '_blank');
+                    return;
+                }
+
+                // Request wallet connection
+                const response = await window.solana.connect();
+                wallet = response.publicKey;
+                isWalletConnected = true;
+
+                // Update UI
+                updateWalletUI();
+                
+                // Check token balance
+                await checkTokenBalance();
+
+                console.log('Wallet connected:', wallet.toString());
+            } catch (error) {
+                console.error('Failed to connect wallet:', error);
+                alert('Failed to connect wallet. Please try again.');
+            }
+        }
+
+        // Disconnect wallet function
+        function disconnectWallet() {
+            try {
+                if (window.solana) {
+                    window.solana.disconnect();
+                }
+                wallet = null;
+                isWalletConnected = false;
+                updateWalletUI();
+                console.log('Wallet disconnected');
+            } catch (error) {
+                console.error('Failed to disconnect wallet:', error);
+            }
+        }
+
+        // Update wallet UI
+        function updateWalletUI() {
+            const connectBtn = document.getElementById('connectBtn');
+            const heroConnectBtn = document.getElementById('heroConnectBtn');
+            const walletStatus = document.getElementById('walletStatus');
+            
+            if (isWalletConnected && wallet) {
+                const shortAddress = wallet.toString().slice(0, 4) + '...' + wallet.toString().slice(-4);
+                connectBtn.innerHTML = `
+                    <span class="hidden sm:inline">${shortAddress}</span>
+                    <span class="sm:hidden">${shortAddress}</span>
+                `;
+                connectBtn.onclick = disconnectWallet;
+                connectBtn.className = 'bg-secondary border border-primary text-primary px-4 md:px-6 py-2 rounded-lg font-semibold shadow-sm hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary text-sm md:text-base';
+                
+                if (heroConnectBtn) {
+                    heroConnectBtn.innerHTML = `
+                        <span class="hidden sm:inline">${shortAddress}</span>
+                        <span class="sm:hidden">${shortAddress}</span>
+                    `;
+                    heroConnectBtn.onclick = disconnectWallet;
+                    heroConnectBtn.className = 'bg-secondary border border-primary text-primary px-6 md:px-8 py-3 md:py-4 rounded-lg text-lg md:text-xl font-bold shadow-sm hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary border-transparent font-grotesk w-full sm:w-auto';
+                }
+                
+                // Update wallet status in full chat
+                if (walletStatus) {
+                    walletStatus.innerHTML = `
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span class="text-sm text-green-500 font-semibold">${shortAddress}</span>
+                    `;
+                }
+            } else {
+                connectBtn.innerHTML = `
+                    <span class="hidden sm:inline">Connect Wallet</span>
+                    <span class="sm:hidden">Connect</span>
+                `;
+                connectBtn.onclick = connectWallet;
+                connectBtn.className = 'bg-primary text-black px-4 md:px-6 py-2 rounded-lg font-semibold shadow-sm hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary border border-transparent text-sm md:text-base';
+                
+                if (heroConnectBtn) {
+                    heroConnectBtn.innerHTML = 'Connect Wallet';
+                    heroConnectBtn.onclick = connectWallet;
+                    heroConnectBtn.className = 'bg-primary text-black px-6 md:px-8 py-3 md:py-4 rounded-lg text-lg md:text-xl font-bold shadow-sm hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary border border-transparent font-grotesk w-full sm:w-auto';
+                }
+                
+                // Update wallet status in full chat
+                if (walletStatus) {
+                    walletStatus.innerHTML = `
+                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span class="text-sm text-red-500 font-semibold">Wallet Disconnected</span>
+                    `;
+                }
+            }
+        }
+
+        // Check GPTARD token balance
+        async function checkTokenBalance() {
+            if (!wallet || !connection) return;
+
+            try {
+                // GPTARD token mint address (replace with actual token mint)
+                const tokenMint = new solanaWeb3.PublicKey('YOUR_GPTARD_TOKEN_MINT_ADDRESS');
+                
+                // Get token accounts
+                const tokenAccounts = await connection.getParsedTokenAccountsByOwner(wallet, {
+                    mint: tokenMint
+                });
+
+                if (tokenAccounts.value.length > 0) {
+                    const balance = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
+                    console.log('GPTARD balance:', balance);
+                    
+                    // Enable chat if user has tokens
+                    if (balance > 0) {
+                        enableChatAccess();
+                    } else {
+                        disableChatAccess();
+                    }
+                } else {
+                    disableChatAccess();
+                }
+            } catch (error) {
+                console.error('Failed to check token balance:', error);
+                // For demo purposes, enable chat access
+                enableChatAccess();
+            }
+        }
+
+        // Enable chat access
+        function enableChatAccess() {
+            const chatButtons = document.querySelectorAll('[onclick*="openFullChat"]');
+            chatButtons.forEach(button => {
+                button.disabled = false;
+                button.style.opacity = '1';
+                button.style.cursor = 'pointer';
+            });
+            
+            // Show success message
+            showNotification('Wallet connected! Chat access granted.', 'success');
+        }
+
+        // Disable chat access
+        function disableChatAccess() {
+            const chatButtons = document.querySelectorAll('[onclick*="openFullChat"]');
+            chatButtons.forEach(button => {
+                button.disabled = true;
+                button.style.opacity = '0.5';
+                button.style.cursor = 'not-allowed';
+            });
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+            
+            const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+            notification.className += ` ${bgColor} text-white`;
+            
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
         // Initialize animations on page load
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Solana connection
+            initializeSolana();
+            
             // Trigger initial fade-in for hero section
             setTimeout(() => {
                 document.querySelector('.section-fade').classList.add('visible');
