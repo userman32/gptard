@@ -440,7 +440,7 @@
                     </div>
                 </div>
                 <div class="hidden md:flex items-center space-x-6">
-                    <a href="#watchlist" class="text-gray-300 hover:text-primary transition-colors font-semibold">Watchlist</a>
+                    <a href="#tools" class="text-gray-300 hover:text-primary transition-colors font-semibold">Tools</a>
                     <a href="#token" class="text-gray-300 hover:text-primary transition-colors font-semibold">Token</a>
                 </div>
                 <button
@@ -505,54 +505,6 @@
                     </div>
                 </section>
 
-                <!-- Watchlist Section -->
-                <section id="watchlist" class="mb-12 md:mb-16 section-fade">
-                    <h2 class="text-2xl md:text-3xl font-extrabold text-foreground mb-2 text-center tracking-tight flex items-center justify-center gap-2 font-grotesk">
-                        <span>Degen Wallet Watchlist</span> 
-                        <span class="text-accent">👀</span>
-                    </h2>
-                    <div class="gradient-bar"></div>
-                    <p class="text-gray-400 text-center mb-8 max-w-2xl mx-auto">Track the moves of the biggest degens on Solana. Monitor wallet activity, token interactions, and transaction patterns.</p>
-                    
-                    <!-- Add Wallet Form -->
-                    <div class="bg-secondary rounded-xl p-6 md:p-8 border border-muted shadow-sm mb-8">
-                        <h3 class="text-xl font-bold mb-4 font-grotesk text-center">Add Wallet to Watchlist</h3>
-                        <div class="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
-                            <input 
-                                type="text" 
-                                id="walletInput" 
-                                placeholder="Enter Solana wallet address..." 
-                                class="flex-1 bg-muted border border-gray-600 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                            >
-                            <button 
-                                onclick="addWalletToWatchlist()" 
-                                class="bg-primary text-black px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Add Wallet
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Watchlist Table -->
-                    <div class="bg-secondary rounded-xl border border-muted shadow-sm overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-muted/50">
-                                    <tr>
-                                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Wallet Address</th>
-                                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Last 3 Tokens</th>
-                                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Last TX Time</th>
-                                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="watchlistTableBody">
-                                    <!-- Watchlist data will be populated by JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
                 <!-- How It Works Section -->
                 <section class="mb-16 section-fade">
                     <h2 class="text-3xl font-extrabold text-foreground mb-2 text-center tracking-tight flex items-center justify-center gap-2"><span>How It Works</span> <span class="text-accent">⚙️</span></h2>
@@ -590,67 +542,113 @@
                     </div>
                 </section>
 
-                <!-- Live Chat Section -->
-                <section class="mb-16 section-fade">
-                    <h2 class="text-3xl font-extrabold text-foreground mb-2 text-center tracking-tight flex items-center justify-center gap-2"><span>Chat with GPTARD</span> <span class="text-accent">💬</span></h2>
+                <!-- Trading Tools Section -->
+                <section id="tools" class="mb-16 section-fade">
+                    <h2 class="text-3xl font-extrabold text-foreground mb-2 text-center tracking-tight flex items-center justify-center gap-2"><span>Trading Tools</span> <span class="text-accent">🛠️</span></h2>
                     <div class="gradient-bar"></div>
-                    <div class="bg-secondary rounded-xl border border-muted shadow-sm overflow-hidden">
-                        <!-- Chat Header -->
-                        <div class="flex items-center justify-between p-4 border-b border-muted">
-                            <div class="flex items-center space-x-3">
-                                <div class="bg-primary text-black rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold">🤖</div>
-                                <div>
-                                    <h3 class="text-lg font-bold font-grotesk">GPTARD AI Assistant</h3>
-                                    <p class="text-sm text-gray-400">Live on Solana</p>
+                    <p class="text-gray-400 text-center mb-8 max-w-2xl mx-auto">Professional trading tools for the Solana ecosystem. Track wallets, analyze performance, and stay ahead of the market.</p>
+                    
+                    <!-- Tools Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                        <!-- Watchlist Tool -->
+                        <div class="bg-secondary rounded-xl border border-muted shadow-sm overflow-hidden">
+                            <div class="p-6 border-b border-muted">
+                                <h3 class="text-xl font-bold font-grotesk flex items-center gap-2">
+                                    <span>👀</span>
+                                    Degen Wallet Watchlist
+                                </h3>
+                                <p class="text-gray-400 mt-2">Track the moves of the biggest degens on Solana. Monitor wallet activity, token interactions, and transaction patterns.</p>
+                            </div>
+                            
+                            <!-- Add Wallet Form -->
+                            <div class="p-6 border-b border-muted">
+                                <h4 class="text-lg font-bold mb-4 font-grotesk">Add Wallet to Watchlist</h4>
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <input 
+                                        type="text" 
+                                        id="walletInput" 
+                                        placeholder="Enter Solana wallet address..." 
+                                        class="flex-1 bg-muted border border-gray-600 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                    <button 
+                                        onclick="addWalletToWatchlist()" 
+                                        class="bg-primary text-black px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Add Wallet
+                                    </button>
                                 </div>
                             </div>
-                            <div class="flex items-center space-x-2">
-                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span class="text-sm text-green-500 font-semibold">Online</span>
+
+                            <!-- Watchlist Table -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-muted/50">
+                                        <tr>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Wallet Address</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Last 3 Tokens</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Last TX Time</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="watchlistTableBody">
+                                        <!-- Watchlist data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        
-                        <!-- Chat Messages -->
-                        <div class="h-96 overflow-y-auto p-4 space-y-4" id="chatMessages">
-                            <!-- Welcome message -->
-                            <div class="flex items-start space-x-3">
-                                <div class="bg-primary text-black rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">🤖</div>
-                                <div class="bg-muted rounded-lg p-3 max-w-xs md:max-w-md">
-                                    <p class="text-sm">Hey there! I'm GPTARD, your personal trenching assistant. I'm trained by the trenches, for the trenches. What can I help you with today?</p>
+
+                        <!-- Chat Tool -->
+                        <div class="bg-secondary rounded-xl border border-muted shadow-sm overflow-hidden">
+                            <div class="p-6 border-b border-muted">
+                                <h3 class="text-xl font-bold font-grotesk flex items-center gap-2">
+                                    <span>💬</span>
+                                    GPTARD AI Assistant
+                                </h3>
+                                <p class="text-gray-400 mt-2">Your personal trenching assistant. Get instant answers about crypto, trading strategies, and market analysis.</p>
+                            </div>
+                            
+                            <!-- Chat Messages -->
+                            <div class="h-80 overflow-y-auto p-4 space-y-4" id="chatMessages">
+                                <!-- Welcome message -->
+                                <div class="flex items-start space-x-3">
+                                    <div class="bg-primary text-black rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">🤖</div>
+                                    <div class="bg-muted rounded-lg p-3 max-w-xs md:max-w-md">
+                                        <p class="text-sm">Hey there! I'm GPTARD, your personal trenching assistant. I'm trained by the trenches, for the trenches. What can I help you with today?</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Chat Input -->
-                        <div class="p-4 border-t border-muted">
-                            <div class="flex space-x-3">
-                                <input 
-                                    type="text" 
-                                    id="chatInput" 
-                                    placeholder="Ask me anything about crypto, trading, or the trenches..." 
-                                    class="flex-1 bg-muted border border-gray-600 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                                    maxlength="500"
-                                >
-                                <button 
-                                    onclick="sendMessage()" 
-                                    id="sendButton"
-                                    class="bg-primary text-black px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    Send
-                                </button>
-                                <button 
-                                    onclick="openFullChat()" 
-                                    class="bg-secondary border border-primary text-primary px-4 py-3 rounded-lg font-semibold hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
-                                    title="Open Full Chat"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="flex justify-between items-center mt-2">
-                                <p class="text-xs text-gray-400">Press Enter to send</p>
-                                <p class="text-xs text-gray-400" id="charCount">0/500</p>
+                            
+                            <!-- Chat Input -->
+                            <div class="p-4 border-t border-muted">
+                                <div class="flex space-x-3">
+                                    <input 
+                                        type="text" 
+                                        id="chatInput" 
+                                        placeholder="Ask me anything about crypto, trading, or the trenches..." 
+                                        class="flex-1 bg-muted border border-gray-600 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        maxlength="500"
+                                    >
+                                    <button 
+                                        onclick="sendMessage()" 
+                                        id="sendButton"
+                                        class="bg-primary text-black px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Send
+                                    </button>
+                                    <button 
+                                        onclick="openFullChat()" 
+                                        class="bg-secondary border border-primary text-primary px-4 py-3 rounded-lg font-semibold hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                                        title="Open Full Chat"
+                                    >
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <p class="text-xs text-gray-400">Press Enter to send</p>
+                                    <p class="text-xs text-gray-400" id="charCount">0/500</p>
+                                </div>
                             </div>
                         </div>
                     </div>
