@@ -676,16 +676,61 @@
         const sendButton = document.getElementById('sendButton');
         const charCount = document.getElementById('charCount');
 
-        // Sample responses for demo
+        // Enhanced responses with conversation memory and crypto data
+        let conversationHistory = [];
+        let userPreferences = {
+            experience: 'beginner',
+            interests: [],
+            lastTopics: []
+        };
+
         const gptardResponses = {
+            // Basic interactions
             'hello': "Hey there! Welcome to the trenches. I'm GPTARD, your AI assistant trained by the community. What's on your mind?",
-            'solana': "Solana is the future! Lightning-fast transactions, low fees, and the best developer ecosystem. The SOL community is building the next generation of DeFi. What specific aspect of Solana interests you?",
+            'hi': "Hi! Ready to dive into the crypto world? What can I help you with today?",
+            'hey': "Hey! What's happening in your crypto journey?",
+            
+            // Solana ecosystem
+            'solana': "Solana is the future! Lightning-fast transactions (65,000 TPS), sub-penny fees, and the best developer ecosystem. The SOL community is building the next generation of DeFi. What specific aspect interests you - DeFi protocols, NFTs, or development?",
+            'sol': "SOL is the native token of Solana. It's used for staking, governance, and paying transaction fees. With its proof-of-stake consensus, you can earn rewards by staking your SOL. Want to know more about staking or current SOL metrics?",
+            
+            // Trading and strategy
             'trading': "Trading in the trenches requires patience and strategy. Always DYOR (Do Your Own Research), never invest more than you can afford to lose, and remember: the market can stay irrational longer than you can stay solvent. What's your trading experience level?",
+            'strategy': "Here's my trading strategy framework: 1) Set clear goals and risk tolerance, 2) Diversify across different assets, 3) Use stop-losses, 4) Keep emotions in check, 5) Always have an exit plan. What's your current strategy?",
+            'portfolio': "Portfolio management is key! Consider diversifying across: 1) Blue-chip cryptos (BTC, ETH), 2) Layer 1s (SOL, ADA), 3) DeFi tokens, 4) NFTs, 5) Stablecoins for stability. What's your current allocation?",
+            
+            // GPTARD specific
             'gptard': "GPTARD is the ultimate AI assistant for the Solana community! I'm trained by the trenches, for the trenches. Hold $GPTARD tokens to unlock exclusive features and premium support. The more you hold, the more powerful I become!",
+            'token': "The $GPTARD token is your key to unlocking premium AI features. Hold tokens to access advanced trading insights, priority support, and exclusive community features. It's the future of AI-powered crypto assistance!",
+            
+            // Crypto general
             'crypto': "Crypto is the future of finance! We're building a decentralized world where you own your data, your money, and your future. The Solana ecosystem is leading the charge with blazing-fast transactions and innovative DeFi protocols.",
+            'bitcoin': "Bitcoin is digital gold - the OG crypto that started it all. It's a store of value and hedge against inflation. While I'm Solana-focused, BTC is still the king of crypto and worth understanding.",
+            'ethereum': "Ethereum pioneered smart contracts and DeFi. While Solana offers faster and cheaper transactions, ETH has the largest ecosystem. Both have their strengths - it's not about choosing one over the other!",
+            
+            // DeFi
             'defi': "DeFi on Solana is revolutionary! From Serum DEX to Raydium, the ecosystem offers lightning-fast trading with minimal fees. The composability of Solana DeFi protocols is unmatched. What DeFi protocols are you most interested in?",
+            'serum': "Serum is Solana's premier DEX - lightning-fast trading with order book depth. It's the backbone of Solana DeFi, offering spot and futures trading with sub-second finality.",
+            'raydium': "Raydium is the leading AMM on Solana, offering automated market making with concentrated liquidity. It's perfect for trading with minimal slippage and maximum efficiency.",
+            'jupiter': "Jupiter is the best aggregator on Solana! It finds the best routes across all DEXs for your trades, ensuring you get the best prices and lowest fees.",
+            
+            // NFTs
             'nft': "NFTs on Solana are the real deal! With transaction fees under $0.01, you can mint and trade without breaking the bank. The Solana NFT community is vibrant and growing fast. Are you an artist, collector, or just curious?",
+            'magiceden': "Magic Eden is the #1 NFT marketplace on Solana. It offers the best selection, lowest fees, and most active community. Perfect for discovering new projects and trading NFTs.",
+            
+            // Technical
+            'gas': "Gas fees on Solana are incredibly low - typically under $0.01 per transaction! Compare that to Ethereum's $50+ fees. That's why Solana is perfect for DeFi and NFT trading.",
+            'speed': "Solana processes 65,000 transactions per second with sub-second finality. That's faster than Visa! No more waiting for confirmations or paying high fees.",
+            
+            // Market sentiment
+            'bull': "Bull markets are exciting but dangerous! Remember to take profits and don't get greedy. The best traders know when to exit. What's your profit-taking strategy?",
+            'bear': "Bear markets are for building and accumulating! Focus on fundamentals, DCA into quality projects, and use the time to learn. What are you doing to prepare for the next bull run?",
+            
+            // Help and guidance
             'help': "I'm here to help! I can assist with crypto questions, trading strategies, Solana ecosystem info, DeFi protocols, NFT guidance, and general trench wisdom. Just ask me anything!",
+            'beginner': "Welcome to crypto! Start with the basics: 1) Learn about blockchain technology, 2) Understand Bitcoin and Ethereum, 3) Explore Solana's advantages, 4) Practice with small amounts, 5) Join communities like ours!",
+            'advanced': "For advanced users, focus on: 1) DeFi yield strategies, 2) MEV and arbitrage opportunities, 3) Protocol governance, 4) Technical analysis, 5) Building on Solana. What's your expertise level?",
+            
             'default': "Interesting question! As your trench assistant, I'm here to help with crypto insights, trading strategies, and Solana ecosystem knowledge. Could you be more specific about what you'd like to know?"
         };
 
@@ -720,9 +765,9 @@
             scrollToBottom();
 
             // Simulate response delay
-            setTimeout(() => {
+            setTimeout(async () => {
                 chatMessages.removeChild(typingDiv);
-                const response = generateResponse(message);
+                const response = await generateResponse(message);
                 addMessage(response, 'bot');
                 isTyping = false;
                 sendButton.disabled = false;
@@ -747,6 +792,10 @@
                     <div class="bg-primary text-black rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">🤖</div>
                     <div class="bg-muted rounded-lg p-3 max-w-xs md:max-w-md">
                         <p class="text-sm">${escapeHtml(text)}</p>
+                        <div class="flex space-x-2 mt-2">
+                            <button onclick="rateResponse(this, 'helpful')" class="text-xs text-gray-400 hover:text-green-500 transition-colors">👍 Helpful</button>
+                            <button onclick="rateResponse(this, 'not-helpful')" class="text-xs text-gray-400 hover:text-red-500 transition-colors">👎 Not Helpful</button>
+                        </div>
                     </div>
                 `;
             }
@@ -754,14 +803,149 @@
             chatMessages.appendChild(messageDiv);
             scrollToBottom();
         }
+        
+        function rateResponse(button, rating) {
+            // Disable both buttons to prevent multiple ratings
+            const buttons = button.parentElement.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            // Visual feedback
+            if (rating === 'helpful') {
+                button.textContent = '👍 Thanks!';
+                button.classList.add('text-green-500');
+            } else {
+                button.textContent = '👎 Thanks!';
+                button.classList.add('text-red-500');
+            }
+            
+            // Store feedback for improvement (in a real app, this would go to a database)
+            const feedback = {
+                rating: rating,
+                message: conversationHistory[conversationHistory.length - 1]?.content || '',
+                timestamp: Date.now()
+            };
+            
+            console.log('User feedback:', feedback);
+            
+            // In a real implementation, you'd send this to your backend
+            // fetch('/api/feedback', { method: 'POST', body: JSON.stringify(feedback) });
+        }
 
-        function generateResponse(message) {
+        async function generateResponse(message) {
             const lowerMessage = message.toLowerCase();
             
-            // Check for keywords
-            for (const [keyword, response] of Object.entries(gptardResponses)) {
+            // Update conversation history
+            conversationHistory.push({ role: 'user', content: message, timestamp: Date.now() });
+            
+            // Extract user interests and experience level
+            updateUserPreferences(lowerMessage);
+            
+            // Get current crypto prices for context
+            let cryptoContext = '';
+            try {
+                const solPrice = tickerPrices['SOL']?.price;
+                const btcPrice = tickerPrices['BTC']?.price;
+                if (solPrice && btcPrice) {
+                    cryptoContext = ` Current prices: SOL $${parseFloat(solPrice).toFixed(2)}, BTC $${parseFloat(btcPrice).toLocaleString()}.`;
+                }
+            } catch (error) {
+                console.log('Could not fetch crypto context');
+            }
+            
+            // Check for keywords with enhanced logic
+            let response = '';
+            let matchedKeywords = [];
+            
+            for (const [keyword, baseResponse] of Object.entries(gptardResponses)) {
                 if (lowerMessage.includes(keyword)) {
-                    return response;
+                    matchedKeywords.push(keyword);
+                }
+            }
+            
+            // Choose best response based on context
+            if (matchedKeywords.length > 0) {
+                const primaryKeyword = matchedKeywords[0];
+                response = gptardResponses[primaryKeyword];
+                
+                // Add context based on conversation history
+                if (conversationHistory.length > 2) {
+                    const lastTopics = userPreferences.lastTopics.slice(-3);
+                    if (lastTopics.includes('trading') && (primaryKeyword === 'solana' || primaryKeyword === 'sol')) {
+                        response += " Since you're interested in trading, consider that SOL's volatility can present both opportunities and risks. Always use proper risk management!";
+                    }
+                    if (lastTopics.includes('defi') && primaryKeyword === 'portfolio') {
+                        response += " Given your DeFi interest, you might want to allocate some of your portfolio to DeFi protocols like Raydium, Serum, or Orca for yield farming opportunities.";
+                    }
+                }
+                
+                // Add crypto price context
+                if (cryptoContext && (primaryKeyword === 'solana' || primaryKeyword === 'sol' || primaryKeyword === 'trading')) {
+                    response += cryptoContext;
+                }
+            } else {
+                // Generate contextual response based on conversation history
+                response = generateContextualResponse(lowerMessage);
+            }
+            
+            // Update conversation history
+            conversationHistory.push({ role: 'assistant', content: response, timestamp: Date.now() });
+            
+            // Keep only last 10 messages for memory
+            if (conversationHistory.length > 10) {
+                conversationHistory = conversationHistory.slice(-10);
+            }
+            
+            return response;
+        }
+        
+        function updateUserPreferences(message) {
+            // Detect experience level
+            if (message.includes('beginner') || message.includes('new') || message.includes('start')) {
+                userPreferences.experience = 'beginner';
+            } else if (message.includes('advanced') || message.includes('expert') || message.includes('professional')) {
+                userPreferences.experience = 'advanced';
+            }
+            
+            // Detect interests
+            const interests = ['trading', 'defi', 'nft', 'staking', 'yield', 'arbitrage', 'governance'];
+            interests.forEach(interest => {
+                if (message.includes(interest) && !userPreferences.interests.includes(interest)) {
+                    userPreferences.interests.push(interest);
+                }
+            });
+            
+            // Update last topics
+            const topics = ['solana', 'trading', 'defi', 'nft', 'portfolio', 'crypto', 'bitcoin', 'ethereum'];
+            topics.forEach(topic => {
+                if (message.includes(topic)) {
+                    userPreferences.lastTopics.push(topic);
+                    if (userPreferences.lastTopics.length > 5) {
+                        userPreferences.lastTopics = userPreferences.lastTopics.slice(-5);
+                    }
+                }
+            });
+        }
+        
+        function generateContextualResponse(message) {
+            // Generate response based on user preferences and conversation context
+            if (userPreferences.experience === 'beginner') {
+                if (message.includes('what') || message.includes('how')) {
+                    return "Great question! As a beginner, I'd recommend starting with the basics. Have you learned about blockchain technology yet? Understanding the fundamentals will help you make better decisions in crypto.";
+                }
+                return "I'm here to help you learn! Since you're new to crypto, I'd suggest starting with understanding Bitcoin and Ethereum first, then exploring Solana's advantages. What specific topic would you like to dive into?";
+            }
+            
+            if (userPreferences.experience === 'advanced') {
+                if (message.includes('strategy') || message.includes('opportunity')) {
+                    return "For advanced strategies, consider exploring MEV opportunities, yield farming across multiple protocols, or participating in governance. What specific advanced topic interests you?";
+                }
+                return "As an advanced user, you might be interested in DeFi yield strategies, protocol governance, or building on Solana. What's your current focus area?";
+            }
+            
+            // Check if user is asking about something in their interests
+            for (const interest of userPreferences.interests) {
+                if (message.includes(interest)) {
+                    return `I see you're interested in ${interest}! Based on our conversation, I can provide more specific insights. What aspect of ${interest} would you like to explore further?`;
                 }
             }
             
