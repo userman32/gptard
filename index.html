@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPTARD - Your personal trenching assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                fontFamily: { inter: ["Inter", "sans-serif"], grotesk: ["Space Grotesk", "sans-serif"] },
+                extend: {
+                    colors: {
+                        background: '#0a0a0a',
+                        foreground: '#ffffff',
+                        primary: '#00ff88',
+                        secondary: '#18181b',
+                        accent: '#7f5af0',
+                        muted: '#222',
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        html, body { height: 100%; }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: rgb(255, 255, 255);
+            background: linear-gradient(135deg, #0a0a0a 0%, #18181b 60%, #232347 100%);
+            min-height: 100vh;
+        }
+        h1, h2, h3, h4, .font-grotesk { font-family: 'Space Grotesk', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #18181b; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        .divider {
+            width: 100vw;
+            height: 32px;
+            display: block;
+        }
+        .section-fade { opacity: 0; transform: translateY(40px); transition: opacity 1s, transform 1s; }
+        .section-fade.visible { opacity: 1; transform: translateY(0); }
+        .gradient-bar {
+            height: 4px;
+            width: 64px;
+            margin: 0.5rem auto 1.5rem auto;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #00ff88 0%, #7f5af0 100%);
+        }
+        .scroll-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+            background: linear-gradient(90deg, #00ff88 0%, #7f5af0 100%);
+            color: #0a0a0a;
+            border-radius: 9999px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.85;
+            border: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .scroll-to-top:hover {
+            opacity: 1;
+            transform: scale(1.08);
+        }
+        .badge-solana {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #18181b;
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            border-radius: 9999px;
+            padding: 0.25rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .badge-solana svg {
+            width: 1.2em;
+            height: 1.2em;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+    <div class="min-h-screen flex flex-col justify-between">
+        <!-- Header -->
+        <header class="fixed top-0 left-0 right-0 bg-secondary/90 backdrop-blur border-b border-muted z-50 shadow-sm">
+            <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <img src="logo.png.png" alt="GPTARD Logo" style="max-height: 48px; width: auto;" class="rounded-full bg-black border border-muted shadow-sm" />
+                    <h1 class="text-2xl font-extrabold text-foreground tracking-tight font-grotesk">GPTARD</h1>
+                    <span class="text-sm text-gray-400 font-semibold">gptard.wtf</span>
+                </div>
+                <button
+                    onclick="connectWallet()"
+                    id="connectBtn"
+                    class="bg-primary text-black px-6 py-2 rounded-lg font-semibold shadow-sm hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary border border-transparent"
+                >
+                    Connect Wallet
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 pt-36 pb-24 px-4">
+            <div class="max-w-5xl mx-auto">
+                <!-- Hero Section -->
+                <section class="flex flex-col items-center text-center mb-16 section-fade">
+                    <span class="badge-solana">
+                        <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="20" fill="#18181b"/><g><rect x="10" y="13" width="20" height="3" rx="1.5" fill="#00ff88"/><rect x="10" y="19" width="20" height="3" rx="1.5" fill="#7f5af0"/><rect x="10" y="25" width="20" height="3" rx="1.5" fill="#00ff88"/></g></svg>
+                        Live on Solana
+                    </span>
+                    <img src="logo.png.png" alt="GPTARD Logo" style="max-height: 96px; width: auto;" class="mb-6 rounded-full bg-black border-4 border-muted shadow" />
+                    <h1 class="text-6xl md:text-7xl font-extrabold text-foreground mb-4 tracking-tight font-grotesk">GPTARD</h1>
+                    <div class="gradient-bar"></div>
+                    <p class="text-2xl md:text-3xl text-gray-200 mb-4 font-semibold font-grotesk">Your personal trenching assistant</p>
+                    <p class="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">Trained by the trenches, for the trenches. Token-gated privacy. Built for the Solana community. Hold $GPTARD to unlock exclusive access to the most advanced AI chatbot on-chain.</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="connectWallet()" id="heroConnectBtn" class="bg-primary text-black px-8 py-4 rounded-lg text-xl font-bold shadow-sm hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary border border-transparent font-grotesk">Connect Wallet</button>
+                        <a href="#token" class="bg-secondary border border-primary text-primary px-8 py-4 rounded-lg text-xl font-bold shadow-sm hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary font-grotesk">Get $GPTARD</a>
+                    </div>
+                </section>
+
+                <!-- Features Section -->
+                <section class="mb-16 section-fade">
+                    <h2 class="text-3xl font-extrabold text-foreground mb-2 text-center tracking-tight flex items-center justify-center gap-2 font-grotesk"><span>Why Choose GPTARD?</span> <span class="text-accent">★</span></h2>
+                    <div class="gradient-bar"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        <div class="bg-secondary rounded-xl p-8 border border-muted shadow-sm flex flex-col items-center hover:bg-muted/60 transition-colors">
+                            <span class="text-4xl mb-4">🤖</span>
+                            <h3 class="text-xl font-bold mb-2 font-grotesk">Trained by the trenches, for the trenches</h3>
+                            <p class="text-gray-400">Get instant, intelligent answers 24/7. No limits, no nonsense.</p>
+                        </div>
+                        <div class="bg-secondary rounded-xl p-8 border border-muted shadow-sm flex flex-col items-center hover:bg-muted/60 transition-colors">
+                            <span class="text-4xl mb-4">🔒</span>
+                            <h3 class="text-xl font-bold mb-2 font-grotesk">Token-Gated Access</h3>
+                            <p class="text-gray-400">Only $GPTARD holders can chat. Your privacy, your control.</p>
+                        </div>
+                        <div class="bg-secondary rounded-xl p-8 border border-muted shadow-sm flex flex-col items-center hover:bg-muted/60 transition-colors">
+                            <span class="text-4xl mb-4">⚡</span>
+                            <h3 class="text-xl font-bold mb-2 font-grotesk">Solana Fast & Cheap</h3>
+                            <p class="text-gray-400">Enjoy lightning-fast, low-cost transactions on the Solana blockchain.</p>
+                        </div>
+                        <div class="bg-secondary rounded-xl p-8 border border-muted shadow-sm flex flex-col items-center hover:bg-muted/60 transition-colors">
+                            <span class="text-4xl mb-4">🛡️</span>
+                            <h3 class="text-xl font-bold mb-2 font-grotesk">Private & Secure</h3>
+                            <p class="text-gray-400">No tracking, no ads, no leaks. Your data stays yours.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- How It Works Section -->
+                <section class="mb-16 section-fade">
+                    <h2 class="text-3xl font-extrabold text-foreground mb-2 text-center tracking-tight flex items-center justify-center gap-2"><span>How It Works</span> <span class="text-accent">⚙️</span></h2>
+                    <div class="gradient-bar"></div>
+                    <div class="flex flex-col md:flex-row gap-8 justify-center items-center">
+                        <div class="bg-secondary flex flex-col items-center p-6 rounded-xl border border-muted shadow-sm">
+                            <div class="bg-primary text-black rounded-full w-16 h-16 flex items-center justify-center text-3xl font-bold mb-2 shadow">1</div>
+                            <div class="text-lg font-semibold mb-1">Connect Wallet</div>
+                            <div class="text-gray-400 text-center">Use Phantom or any Solana wallet to get started.</div>
+                        </div>
+                        <div class="hidden md:block text-4xl text-primary">→</div>
+                        <div class="bg-secondary flex flex-col items-center p-6 rounded-xl border border-muted shadow-sm">
+                            <div class="bg-primary text-black rounded-full w-16 h-16 flex items-center justify-center text-3xl font-bold mb-2 shadow">2</div>
+                            <div class="text-lg font-semibold mb-1">Hold $GPTARD</div>
+                            <div class="text-gray-400 text-center">Own at least 1000 $GPTARD tokens to unlock chat access.</div>
+                        </div>
+                        <div class="hidden md:block text-4xl text-primary">→</div>
+                        <div class="bg-secondary flex flex-col items-center p-6 rounded-xl border border-muted shadow-sm">
+                            <div class="bg-primary text-black rounded-full w-16 h-16 flex items-center justify-center text-3xl font-bold mb-2 shadow">3</div>
+                            <div class="text-lg font-semibold mb-1">Chat with AI</div>
+                            <div class="text-gray-400 text-center">Ask anything, get answers instantly from GPTARD.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Token Utility Section -->
+                <section id="token" class="mb-16 section-fade">
+                    <h2 class="text-3xl font-extrabold text-foreground mb-2 text-center tracking-tight flex items-center justify-center gap-2"><span>Why Hold $GPTARD?</span> <span class="text-accent">💎</span></h2>
+                    <div class="gradient-bar"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-secondary rounded-xl p-8 border border-muted shadow-sm hover:bg-muted/60 transition-colors">
+                            <h3 class="text-xl font-bold mb-2">Unlock Exclusive AI Features</h3>
+                            <p class="text-gray-400">Access advanced chat, early features, and premium support as a token holder.</p>
+                        </div>
+                        <div class="bg-secondary rounded-xl p-8 border border-muted shadow-sm hover:bg-muted/60 transition-colors">
+                            <h3 class="text-xl font-bold mb-2">Governance Rights</h3>
+                            <p class="text-gray-400">Vote on new features, tokenomics, and the future direction of GPTARD.</p>
+                        </div>
+                        <div class="bg-secondary rounded-xl p-8 border border-muted shadow-sm hover:bg-muted/60 transition-colors">
+                            <h3 class="text-xl font-bold mb-2">Revenue Sharing</h3>
+                            <p class="text-gray-400">Earn a share of platform revenue through staking and participation rewards.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Chat Preview Section -->
+                <section class="mb-16 section-fade">
+                    <h2 class="text-3xl font-extrabold text-foreground mb-2 text-center tracking-tight flex items-center justify-center gap-2"><span>Chat Preview</span> <span class="text-accent">💬</span></h2>
+                    <div class="gradient-bar"></div>
+                    <div class="bg-secondary rounded-xl p-8 border border-muted shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold font-grotesk">GPTARD AI Assistant</h3>
+                            <span class="bg-primary text-black px-3 py-1 rounded-full text-sm font-semibold">Coming Soon</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="bg-muted rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">U</div>
+                                <div class="bg-muted rounded-lg p-3 max-w-xs">
+                                    <p class="text-sm">What's the best strategy for trading Solana?</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3 justify-end">
+                                <div class="bg-primary text-black rounded-lg p-3 max-w-xs">
+                                    <p class="text-sm">Based on current market conditions, I'd recommend...</p>
+                                </div>
+                                <div class="bg-primary text-black rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">🤖</div>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 bg-muted rounded-lg">
+                            <p class="text-sm text-gray-400 text-center">Connect your wallet and hold $GPTARD to unlock full chat access</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-secondary border-t border-muted py-8">
+            <div class="max-w-5xl mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                        <img src="logo.png.png" alt="GPTARD Logo" style="max-height: 32px; width: auto;" class="rounded-full bg-black border border-muted" />
+                        <span class="text-lg font-bold font-grotesk">GPTARD</span>
+                    </div>
+                    <div class="flex space-x-6">
+                        <a href="https://twitter.com/gptard" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-primary transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-muted text-center">
+                    <p class="text-gray-400 text-sm">© 2024 GPTARD. Built for the Solana community.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button onclick="scrollToTop()" class="scroll-to-top" id="scrollToTop" style="display: none;">
+        ↑
+    </button>
+
+    <script>
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section-fade').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Scroll to top functionality
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Show/hide scroll to top button
+        window.addEventListener('scroll', () => {
+            const scrollBtn = document.getElementById('scrollToTop');
+            if (window.scrollY > 300) {
+                scrollBtn.style.display = 'flex';
+            } else {
+                scrollBtn.style.display = 'none';
+            }
+        });
+
+        // Wallet connection placeholder
+        function connectWallet() {
+            alert('Wallet connection coming soon! This will integrate with Solana wallets like Phantom.');
+        }
+
+        // Initialize animations on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Trigger initial fade-in for hero section
+            setTimeout(() => {
+                document.querySelector('.section-fade').classList.add('visible');
+            }, 100);
+        });
+    </script>
+</body>
+</html> 
