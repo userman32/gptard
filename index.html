@@ -102,6 +102,80 @@
             100% { transform: translateX(100vw); opacity: 0; }
         }
         
+        /* Floating Crypto Particles */
+        .crypto-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            color: #00ff88;
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0.15;
+            animation: float 15s linear infinite;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        
+        .particle:nth-child(odd) {
+            color: #7f5af0;
+            text-shadow: 0 0 10px rgba(127, 90, 240, 0.5);
+        }
+        
+        .particle:nth-child(3n) {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.15;
+            }
+            90% {
+                opacity: 0.15;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Different animation delays for variety */
+        .particle:nth-child(1) { animation-delay: 0s; animation-duration: 20s; }
+        .particle:nth-child(2) { animation-delay: 2s; animation-duration: 18s; }
+        .particle:nth-child(3) { animation-delay: 4s; animation-duration: 22s; }
+        .particle:nth-child(4) { animation-delay: 6s; animation-duration: 16s; }
+        .particle:nth-child(5) { animation-delay: 8s; animation-duration: 24s; }
+        .particle:nth-child(6) { animation-delay: 10s; animation-duration: 19s; }
+        .particle:nth-child(7) { animation-delay: 12s; animation-duration: 21s; }
+        .particle:nth-child(8) { animation-delay: 14s; animation-duration: 17s; }
+        .particle:nth-child(9) { animation-delay: 16s; animation-duration: 23s; }
+        .particle:nth-child(10) { animation-delay: 18s; animation-duration: 20s; }
+        .particle:nth-child(11) { animation-delay: 20s; animation-duration: 18s; }
+        .particle:nth-child(12) { animation-delay: 22s; animation-duration: 25s; }
+        .particle:nth-child(13) { animation-delay: 24s; animation-duration: 19s; }
+        .particle:nth-child(14) { animation-delay: 26s; animation-duration: 22s; }
+        .particle:nth-child(15) { animation-delay: 28s; animation-duration: 21s; }
+        
+        /* Mobile optimization for particles */
+        @media (max-width: 768px) {
+            .particle {
+                font-size: 18px;
+                opacity: 0.1;
+            }
+        }
+        
         /* Price Ticker */
         .price-ticker {
             position: fixed;
@@ -325,6 +399,25 @@
             <div class="chart-line"></div>
             <div class="chart-line"></div>
         </div>
+    </div>
+    
+    <!-- Floating Crypto Particles -->
+    <div class="crypto-particles" id="cryptoParticles">
+        <div class="particle">₿</div>
+        <div class="particle">Ξ</div>
+        <div class="particle">◎</div>
+        <div class="particle">₳</div>
+        <div class="particle">●</div>
+        <div class="particle">◈</div>
+        <div class="particle">◆</div>
+        <div class="particle">◇</div>
+        <div class="particle">★</div>
+        <div class="particle">♦</div>
+        <div class="particle">♠</div>
+        <div class="particle">♣</div>
+        <div class="particle">♥</div>
+        <div class="particle">⚡</div>
+        <div class="particle">💎</div>
     </div>
     
     <!-- Price Ticker -->
@@ -693,6 +786,53 @@
             container.innerHTML = tickerHTML + tickerHTML;
         }
 
+        // Particle system for floating crypto symbols
+        function initParticleSystem() {
+            const particlesContainer = document.getElementById('cryptoParticles');
+            if (!particlesContainer) return;
+            
+            const cryptoSymbols = ['₿', 'Ξ', '◎', '₳', '●', '◈', '◆', '◇', '★', '♦', '♠', '♣', '♥', '⚡', '💎', '🔗', '🔒', '🛡️', '🚀', '💫'];
+            
+            // Create additional particles dynamically
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = cryptoSymbols[Math.floor(Math.random() * cryptoSymbols.length)];
+                
+                // Random starting position
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 30 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Add mouse interaction for particles
+            document.addEventListener('mousemove', (e) => {
+                const particles = document.querySelectorAll('.particle');
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                
+                particles.forEach((particle, index) => {
+                    const rect = particle.getBoundingClientRect();
+                    const particleX = rect.left + rect.width / 2;
+                    const particleY = rect.top + rect.height / 2;
+                    
+                    const distance = Math.sqrt(
+                        Math.pow(mouseX - particleX, 2) + Math.pow(mouseY - particleY, 2)
+                    );
+                    
+                    if (distance < 100) {
+                        particle.style.transform = `scale(1.2)`;
+                        particle.style.opacity = '0.3';
+                    } else {
+                        particle.style.transform = 'scale(1)';
+                        particle.style.opacity = '0.15';
+                    }
+                });
+            });
+        }
+
         // Initialize animations on page load
         document.addEventListener('DOMContentLoaded', () => {
             // Trigger initial fade-in for hero section
@@ -705,6 +845,9 @@
             
             // Initialize crypto ticker
             fetchCryptoPrices();
+            
+            // Initialize particle system
+            initParticleSystem();
             
             // Update prices every 30 seconds
             setInterval(fetchCryptoPrices, 30000);
