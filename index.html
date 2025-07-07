@@ -439,6 +439,10 @@
                         <span class="text-xs md:text-sm text-gray-400 font-semibold hidden sm:block">gptard.wtf</span>
                     </div>
                 </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#watchlist" class="text-gray-300 hover:text-primary transition-colors font-semibold">Watchlist</a>
+                    <a href="#token" class="text-gray-300 hover:text-primary transition-colors font-semibold">Token</a>
+                </div>
                 <button
                     onclick="connectWallet()"
                     id="connectBtn"
@@ -497,6 +501,54 @@
                             <span class="text-3xl md:text-4xl mb-3 md:mb-4">🛡️</span>
                             <h3 class="text-lg md:text-xl font-bold mb-2 font-grotesk text-center">Private & Secure</h3>
                             <p class="text-gray-400 text-sm md:text-base text-center">No tracking, no ads, no leaks. Your data stays yours.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Watchlist Section -->
+                <section id="watchlist" class="mb-12 md:mb-16 section-fade">
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-foreground mb-2 text-center tracking-tight flex items-center justify-center gap-2 font-grotesk">
+                        <span>Degen Wallet Watchlist</span> 
+                        <span class="text-accent">👀</span>
+                    </h2>
+                    <div class="gradient-bar"></div>
+                    <p class="text-gray-400 text-center mb-8 max-w-2xl mx-auto">Track the moves of the biggest degens on Solana. Monitor wallet activity, token interactions, and transaction patterns.</p>
+                    
+                    <!-- Add Wallet Form -->
+                    <div class="bg-secondary rounded-xl p-6 md:p-8 border border-muted shadow-sm mb-8">
+                        <h3 class="text-xl font-bold mb-4 font-grotesk text-center">Add Wallet to Watchlist</h3>
+                        <div class="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+                            <input 
+                                type="text" 
+                                id="walletInput" 
+                                placeholder="Enter Solana wallet address..." 
+                                class="flex-1 bg-muted border border-gray-600 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                            >
+                            <button 
+                                onclick="addWalletToWatchlist()" 
+                                class="bg-primary text-black px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Add Wallet
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Watchlist Table -->
+                    <div class="bg-secondary rounded-xl border border-muted shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-muted/50">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Wallet Address</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Last 3 Tokens</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Last TX Time</th>
+                                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300 border-b border-muted">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="watchlistTableBody">
+                                    <!-- Watchlist data will be populated by JavaScript -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
@@ -1569,6 +1621,173 @@
             }, 3000);
         }
 
+        // Watchlist Functionality
+        let watchlistData = [
+            {
+                address: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+                lastTokens: ['BONK', 'WIF', 'POPCAT'],
+                lastTxTime: '2 minutes ago',
+                id: 1
+            },
+            {
+                address: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+                lastTokens: ['JUP', 'RAY', 'SRM'],
+                lastTxTime: '5 minutes ago',
+                id: 2
+            },
+            {
+                address: '3XwxHcbyqcd1xkBExFyLpLqXJqJqJqJqJqJqJqJqJqJq',
+                lastTokens: ['SOL', 'USDC', 'ETH'],
+                lastTxTime: '12 minutes ago',
+                id: 3
+            },
+            {
+                address: '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
+                lastTokens: ['GPTARD', 'BONK', 'WIF'],
+                lastTxTime: '18 minutes ago',
+                id: 4
+            },
+            {
+                address: '2xNweLHLqrxmQZbqQJqJqJqJqJqJqJqJqJqJqJqJqJqJq',
+                lastTokens: ['POPCAT', 'BOME', 'DOGWIFHAT'],
+                lastTxTime: '25 minutes ago',
+                id: 5
+            }
+        ];
+
+        // Initialize watchlist
+        function initializeWatchlist() {
+            renderWatchlist();
+        }
+
+        // Render watchlist table
+        function renderWatchlist() {
+            const tableBody = document.getElementById('watchlistTableBody');
+            if (!tableBody) return;
+
+            tableBody.innerHTML = watchlistData.map(wallet => `
+                <tr class="border-b border-muted hover:bg-muted/30 transition-colors">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span class="font-mono text-sm text-gray-300">${wallet.address.slice(0, 4)}...${wallet.address.slice(-4)}</span>
+                            <button onclick="copyToClipboard('${wallet.address}')" class="text-gray-400 hover:text-primary transition-colors" title="Copy address">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-wrap gap-1">
+                            ${wallet.lastTokens.map(token => `
+                                <span class="bg-muted px-2 py-1 rounded text-xs font-semibold text-gray-300">${token}</span>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-sm text-gray-400">${wallet.lastTxTime}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex space-x-2">
+                            <button onclick="analyzeWallet('${wallet.address}')" class="bg-primary text-black px-3 py-1 rounded text-xs font-semibold hover:bg-primary/90 transition-colors">
+                                Analyze
+                            </button>
+                            <button onclick="removeFromWatchlist(${wallet.id})" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-semibold hover:bg-red-700 transition-colors">
+                                Remove
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Add wallet to watchlist
+        function addWalletToWatchlist() {
+            const walletInput = document.getElementById('walletInput');
+            const address = walletInput.value.trim();
+
+            if (!address) {
+                showNotification('Please enter a wallet address', 'error');
+                return;
+            }
+
+            // Basic Solana address validation (44 characters, base58)
+            if (address.length !== 44 || !/^[1-9A-HJ-NP-Za-km-z]+$/.test(address)) {
+                showNotification('Please enter a valid Solana wallet address', 'error');
+                return;
+            }
+
+            // Check if wallet already exists
+            if (watchlistData.some(wallet => wallet.address === address)) {
+                showNotification('Wallet already in watchlist', 'error');
+                return;
+            }
+
+            // Add new wallet with mock data
+            const newWallet = {
+                address: address,
+                lastTokens: ['Loading...', 'Loading...', 'Loading...'],
+                lastTxTime: 'Just added',
+                id: Date.now()
+            };
+
+            watchlistData.unshift(newWallet);
+            renderWatchlist();
+            walletInput.value = '';
+            
+            showNotification('Wallet added to watchlist', 'success');
+
+            // Simulate loading real data
+            setTimeout(() => {
+                const mockTokens = ['SOL', 'USDC', 'BONK', 'WIF', 'JUP', 'RAY', 'SRM', 'GPTARD', 'POPCAT', 'BOME'];
+                const randomTokens = [];
+                for (let i = 0; i < 3; i++) {
+                    const randomToken = mockTokens[Math.floor(Math.random() * mockTokens.length)];
+                    if (!randomTokens.includes(randomToken)) {
+                        randomTokens.push(randomToken);
+                    }
+                }
+                
+                newWallet.lastTokens = randomTokens;
+                newWallet.lastTxTime = '1 minute ago';
+                renderWatchlist();
+            }, 2000);
+        }
+
+        // Remove wallet from watchlist
+        function removeFromWatchlist(id) {
+            watchlistData = watchlistData.filter(wallet => wallet.id !== id);
+            renderWatchlist();
+            showNotification('Wallet removed from watchlist', 'success');
+        }
+
+        // Analyze wallet
+        function analyzeWallet(address) {
+            showNotification(`Analyzing wallet ${address.slice(0, 4)}...${address.slice(-4)}`, 'info');
+            
+            // Simulate analysis
+            setTimeout(() => {
+                const analysis = {
+                    totalValue: `$${(Math.random() * 1000000 + 10000).toFixed(2)}`,
+                    tokenCount: Math.floor(Math.random() * 50 + 5),
+                    transactionCount: Math.floor(Math.random() * 1000 + 100),
+                    riskLevel: ['Low', 'Medium', 'High'][Math.floor(Math.random() * 3)]
+                };
+                
+                showNotification(`Analysis complete! Value: ${analysis.totalValue}, Risk: ${analysis.riskLevel}`, 'success');
+            }, 1500);
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Address copied to clipboard', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy address', 'error');
+            });
+        }
+
         // Initialize animations on page load
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize Solana connection
@@ -1587,6 +1806,9 @@
             
             // Initialize particle system
             initParticleSystem();
+            
+            // Initialize watchlist
+            initializeWatchlist();
             
             // Update prices every 30 seconds
             setInterval(fetchCryptoPrices, 30000);
