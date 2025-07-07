@@ -1846,17 +1846,262 @@
         function analyzeWallet(address) {
             showNotification(`Analyzing wallet ${address.slice(0, 4)}...${address.slice(-4)}`, 'info');
             
-            // Simulate analysis
+            // Simulate comprehensive analysis
             setTimeout(() => {
-                const analysis = {
-                    totalValue: `$${(Math.random() * 1000000 + 10000).toFixed(2)}`,
-                    tokenCount: Math.floor(Math.random() * 50 + 5),
-                    transactionCount: Math.floor(Math.random() * 1000 + 100),
-                    riskLevel: ['Low', 'Medium', 'High'][Math.floor(Math.random() * 3)]
-                };
+                const analysis = generateWalletAnalysis(address);
+                showWalletAnalysisModal(analysis);
+            }, 2000);
+        }
+
+        // Generate comprehensive wallet analysis
+        function generateWalletAnalysis(address) {
+            const totalValue = Math.random() * 1000000 + 10000;
+            const tokenCount = Math.floor(Math.random() * 50 + 5);
+            const transactionCount = Math.floor(Math.random() * 1000 + 100);
+            const riskLevel = ['Low', 'Medium', 'High'][Math.floor(Math.random() * 3)];
+            
+            // Generate mock token holdings
+            const tokens = ['SOL', 'USDC', 'BONK', 'WIF', 'JUP', 'RAY', 'SRM', 'GPTARD', 'POPCAT', 'BOME', 'DOGWIFHAT', 'SAMO', 'ORCA', 'MNGO', 'SRM'];
+            const holdings = [];
+            
+            for (let i = 0; i < tokenCount; i++) {
+                const token = tokens[Math.floor(Math.random() * tokens.length)];
+                const amount = Math.random() * 10000 + 100;
+                const value = Math.random() * 50000 + 1000;
+                const change24h = (Math.random() * 40 - 20).toFixed(2);
                 
-                showNotification(`Analysis complete! Value: ${analysis.totalValue}, Risk: ${analysis.riskLevel}`, 'success');
-            }, 1500);
+                if (!holdings.find(h => h.symbol === token)) {
+                    holdings.push({
+                        symbol: token,
+                        amount: amount.toFixed(2),
+                        value: value.toFixed(2),
+                        change24h: parseFloat(change24h)
+                    });
+                }
+            }
+
+            // Generate mock trade history
+            const tradeHistory = [];
+            const tradeTypes = ['Buy', 'Sell'];
+            const tradeTokens = ['SOL', 'BONK', 'WIF', 'JUP', 'GPTARD', 'POPCAT'];
+            
+            for (let i = 0; i < 20; i++) {
+                const type = tradeTypes[Math.floor(Math.random() * tradeTypes.length)];
+                const token = tradeTokens[Math.floor(Math.random() * tradeTokens.length)];
+                const amount = Math.random() * 1000 + 10;
+                const price = Math.random() * 100 + 1;
+                const timestamp = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000); // Last 30 days
+                const pnl = type === 'Sell' ? (Math.random() * 2000 - 1000) : 0; // Only sells have P&L
+                
+                tradeHistory.push({
+                    type: type,
+                    token: token,
+                    amount: amount.toFixed(2),
+                    price: price.toFixed(4),
+                    timestamp: timestamp,
+                    pnl: pnl.toFixed(2),
+                    success: pnl > 0
+                });
+            }
+
+            // Calculate overall P&L
+            const totalPnL = tradeHistory.reduce((sum, trade) => sum + parseFloat(trade.pnl), 0);
+            const successfulTrades = tradeHistory.filter(trade => trade.success).length;
+            const totalTrades = tradeHistory.filter(trade => trade.type === 'Sell').length;
+            const successRate = totalTrades > 0 ? (successfulTrades / totalTrades * 100).toFixed(1) : 0;
+
+            // Find most and least successful trades
+            const sellTrades = tradeHistory.filter(trade => trade.type === 'Sell');
+            const mostSuccessful = sellTrades.reduce((max, trade) => 
+                parseFloat(trade.pnl) > parseFloat(max.pnl) ? trade : max, sellTrades[0] || { pnl: 0 });
+            const leastSuccessful = sellTrades.reduce((min, trade) => 
+                parseFloat(trade.pnl) < parseFloat(min.pnl) ? trade : min, sellTrades[0] || { pnl: 0 });
+
+            return {
+                address: address,
+                totalValue: totalValue.toFixed(2),
+                tokenCount: tokenCount,
+                transactionCount: transactionCount,
+                riskLevel: riskLevel,
+                holdings: holdings,
+                tradeHistory: tradeHistory,
+                totalPnL: totalPnL.toFixed(2),
+                successRate: successRate,
+                mostSuccessful: mostSuccessful,
+                leastSuccessful: leastSuccessful,
+                analysisDate: new Date().toLocaleString()
+            };
+        }
+
+        // Show wallet analysis modal
+        function showWalletAnalysisModal(analysis) {
+            // Remove existing modal if any
+            const existingModal = document.getElementById('walletAnalysisModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            const modal = document.createElement('div');
+            modal.id = 'walletAnalysisModal';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-secondary rounded-xl border border-muted shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div class="p-6 border-b border-muted">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-2xl font-bold font-grotesk">Wallet Analysis</h2>
+                            <button onclick="closeWalletAnalysisModal()" class="text-gray-400 hover:text-white transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-gray-400 mt-2">${analysis.address.slice(0, 4)}...${analysis.address.slice(-4)} • Analyzed ${analysis.analysisDate}</p>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <!-- Overview Stats -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-muted rounded-lg p-4">
+                                <div class="text-sm text-gray-400">Total Value</div>
+                                <div class="text-xl font-bold text-primary">$${analysis.totalValue}</div>
+                            </div>
+                            <div class="bg-muted rounded-lg p-4">
+                                <div class="text-sm text-gray-400">Total P&L</div>
+                                <div class="text-xl font-bold ${parseFloat(analysis.totalPnL) >= 0 ? 'text-green-500' : 'text-red-500'}">$${analysis.totalPnL}</div>
+                            </div>
+                            <div class="bg-muted rounded-lg p-4">
+                                <div class="text-sm text-gray-400">Success Rate</div>
+                                <div class="text-xl font-bold text-accent">${analysis.successRate}%</div>
+                            </div>
+                            <div class="bg-muted rounded-lg p-4">
+                                <div class="text-sm text-gray-400">Risk Level</div>
+                                <div class="text-xl font-bold ${analysis.riskLevel === 'Low' ? 'text-green-500' : analysis.riskLevel === 'Medium' ? 'text-yellow-500' : 'text-red-500'}">${analysis.riskLevel}</div>
+                            </div>
+                        </div>
+
+                        <!-- Holdings -->
+                        <div>
+                            <h3 class="text-lg font-bold mb-4">Token Holdings (${analysis.holdings.length})</h3>
+                            <div class="bg-muted rounded-lg overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead class="bg-secondary">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300">Token</th>
+                                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300">Amount</th>
+                                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300">Value</th>
+                                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300">24h Change</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${analysis.holdings.map(holding => `
+                                                <tr class="border-b border-gray-700">
+                                                    <td class="px-4 py-3">
+                                                        <span class="font-semibold">${holding.symbol}</span>
+                                                    </td>
+                                                    <td class="px-4 py-3">${holding.amount}</td>
+                                                    <td class="px-4 py-3">$${holding.value}</td>
+                                                    <td class="px-4 py-3">
+                                                        <span class="${holding.change24h >= 0 ? 'text-green-500' : 'text-red-500'}">
+                                                            ${holding.change24h >= 0 ? '+' : ''}${holding.change24h}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trade History -->
+                        <div>
+                            <h3 class="text-lg font-bold mb-4">Recent Trades (${analysis.tradeHistory.length})</h3>
+                            <div class="bg-muted rounded-lg overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead class="bg-secondary">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300">Type</th>
+                                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300">Token</th>
+                                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300">Amount</th>
+                                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300">Price</th>
+                                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300">P&L</th>
+                                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300">Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${analysis.tradeHistory.slice(0, 10).map(trade => `
+                                                <tr class="border-b border-gray-700">
+                                                    <td class="px-4 py-3">
+                                                        <span class="px-2 py-1 rounded text-xs font-semibold ${trade.type === 'Buy' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'}">
+                                                            ${trade.type}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-3 font-semibold">${trade.token}</td>
+                                                    <td class="px-4 py-3">${trade.amount}</td>
+                                                    <td class="px-4 py-3">$${trade.price}</td>
+                                                    <td class="px-4 py-3">
+                                                        <span class="${trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'}">
+                                                            ${trade.pnl >= 0 ? '+' : ''}$${trade.pnl}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-gray-400">
+                                                        ${trade.timestamp.toLocaleDateString()}
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Best/Worst Trades -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-muted rounded-lg p-4">
+                                <h4 class="text-lg font-bold mb-3 text-green-500">Most Successful Trade</h4>
+                                ${analysis.mostSuccessful.token ? `
+                                    <div class="space-y-2">
+                                        <div><span class="text-gray-400">Token:</span> <span class="font-semibold">${analysis.mostSuccessful.token}</span></div>
+                                        <div><span class="text-gray-400">Amount:</span> <span class="font-semibold">${analysis.mostSuccessful.amount}</span></div>
+                                        <div><span class="text-gray-400">P&L:</span> <span class="font-semibold text-green-500">+$${analysis.mostSuccessful.pnl}</span></div>
+                                        <div><span class="text-gray-400">Date:</span> <span class="font-semibold">${analysis.mostSuccessful.timestamp.toLocaleDateString()}</span></div>
+                                    </div>
+                                ` : '<p class="text-gray-400">No sell trades found</p>'}
+                            </div>
+                            <div class="bg-muted rounded-lg p-4">
+                                <h4 class="text-lg font-bold mb-3 text-red-500">Least Successful Trade</h4>
+                                ${analysis.leastSuccessful.token ? `
+                                    <div class="space-y-2">
+                                        <div><span class="text-gray-400">Token:</span> <span class="font-semibold">${analysis.leastSuccessful.token}</span></div>
+                                        <div><span class="text-gray-400">Amount:</span> <span class="font-semibold">${analysis.leastSuccessful.amount}</span></div>
+                                        <div><span class="text-gray-400">P&L:</span> <span class="font-semibold text-red-500">$${analysis.leastSuccessful.pnl}</span></div>
+                                        <div><span class="text-gray-400">Date:</span> <span class="font-semibold">${analysis.leastSuccessful.timestamp.toLocaleDateString()}</span></div>
+                                    </div>
+                                ` : '<p class="text-gray-400">No sell trades found</p>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeWalletAnalysisModal();
+                }
+            });
+        }
+
+        // Close wallet analysis modal
+        function closeWalletAnalysisModal() {
+            const modal = document.getElementById('walletAnalysisModal');
+            if (modal) {
+                modal.remove();
+            }
         }
 
         // Copy to clipboard
