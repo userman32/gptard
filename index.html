@@ -590,6 +590,15 @@
                                 >
                                     Send
                                 </button>
+                                <button 
+                                    onclick="openFullChat()" 
+                                    class="bg-secondary border border-primary text-primary px-4 py-3 rounded-lg font-semibold hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                                    title="Open Full Chat"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                                    </svg>
+                                </button>
                             </div>
                             <div class="flex justify-between items-center mt-2">
                                 <p class="text-xs text-gray-400">Press Enter to send</p>
@@ -620,6 +629,58 @@
                 </div>
             </div>
         </footer>
+    </div>
+
+    <!-- Full Chat Screen -->
+    <div id="fullChatScreen" class="fixed inset-0 bg-background z-50 hidden">
+        <!-- Full Chat Header -->
+        <div class="bg-secondary border-b border-muted p-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <button onclick="closeFullChat()" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <div class="bg-primary text-black rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold">🤖</div>
+                <div>
+                    <h2 class="text-xl font-bold font-grotesk">GPTARD AI Assistant</h2>
+                    <p class="text-sm text-gray-400">Full Chat Mode</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span class="text-sm text-green-500 font-semibold">Online</span>
+            </div>
+        </div>
+        
+        <!-- Full Chat Messages -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4" id="fullChatMessages">
+            <!-- Messages will be copied here -->
+        </div>
+        
+        <!-- Full Chat Input -->
+        <div class="bg-secondary border-t border-muted p-4">
+            <div class="flex space-x-3">
+                <input 
+                    type="text" 
+                    id="fullChatInput" 
+                    placeholder="Ask me anything about crypto, trading, or the trenches..." 
+                    class="flex-1 bg-muted border border-gray-600 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    maxlength="500"
+                >
+                <button 
+                    onclick="sendFullChatMessage()" 
+                    id="fullSendButton"
+                    class="bg-primary text-black px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    Send
+                </button>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+                <p class="text-xs text-gray-400">Press Enter to send</p>
+                <p class="text-xs text-gray-400" id="fullCharCount">0/500</p>
+            </div>
+        </div>
     </div>
 
     <!-- Scroll to Top Button -->
@@ -738,41 +799,10 @@
             const message = chatInput.value.trim();
             if (!message || isTyping) return;
 
-            // Add user message
-            addMessage(message, 'user');
+            // Use shared message sending logic
+            sendMessageFromInput(message, 'main');
             chatInput.value = '';
             updateCharCount();
-
-            // Simulate typing
-            isTyping = true;
-            sendButton.disabled = true;
-            sendButton.textContent = 'Typing...';
-
-            // Add typing indicator
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'flex items-start space-x-3';
-            typingDiv.innerHTML = `
-                <div class="bg-primary text-black rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">🤖</div>
-                <div class="bg-muted rounded-lg p-3">
-                    <div class="flex space-x-1">
-                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                    </div>
-                </div>
-            `;
-            chatMessages.appendChild(typingDiv);
-            scrollToBottom();
-
-            // Simulate response delay
-            setTimeout(async () => {
-                chatMessages.removeChild(typingDiv);
-                const response = await generateResponse(message);
-                addMessage(response, 'bot');
-                isTyping = false;
-                sendButton.disabled = false;
-                sendButton.textContent = 'Send';
-            }, 1500 + Math.random() * 1000);
         }
 
         function addMessage(text, sender) {
@@ -967,12 +997,164 @@
             return div.innerHTML;
         }
 
+        // Full chat functionality
+        function openFullChat() {
+            const fullChatScreen = document.getElementById('fullChatScreen');
+            const fullChatMessages = document.getElementById('fullChatMessages');
+            const fullChatInput = document.getElementById('fullChatInput');
+            
+            // Copy existing messages to full chat
+            fullChatMessages.innerHTML = chatMessages.innerHTML;
+            
+            // Show full chat screen
+            fullChatScreen.classList.remove('hidden');
+            fullChatScreen.classList.add('flex', 'flex-col');
+            
+            // Focus on input
+            setTimeout(() => {
+                fullChatInput.focus();
+            }, 100);
+            
+            // Scroll to bottom
+            fullChatMessages.scrollTop = fullChatMessages.scrollHeight;
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeFullChat() {
+            const fullChatScreen = document.getElementById('fullChatScreen');
+            
+            // Hide full chat screen
+            fullChatScreen.classList.add('hidden');
+            fullChatScreen.classList.remove('flex', 'flex-col');
+            
+            // Restore body scroll
+            document.body.style.overflow = '';
+            
+            // Focus back on main chat input
+            chatInput.focus();
+        }
+        
+        function sendFullChatMessage() {
+            const fullChatInput = document.getElementById('fullChatInput');
+            const message = fullChatInput.value.trim();
+            if (!message || isTyping) return;
+            
+            // Send message using existing logic
+            sendMessageFromInput(message, 'fullChat');
+            fullChatInput.value = '';
+            updateFullCharCount();
+        }
+        
+        function sendMessageFromInput(message, source = 'main') {
+            const targetMessages = source === 'fullChat' ? 
+                document.getElementById('fullChatMessages') : 
+                document.getElementById('chatMessages');
+            
+            // Add user message
+            addMessageToContainer(message, 'user', targetMessages);
+            
+            // Simulate typing
+            const sendButton = source === 'fullChat' ? 
+                document.getElementById('fullSendButton') : 
+                document.getElementById('sendButton');
+            
+            sendButton.disabled = true;
+            sendButton.textContent = 'Typing...';
+            
+            // Add typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'flex items-start space-x-3';
+            typingDiv.innerHTML = `
+                <div class="bg-primary text-black rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">🤖</div>
+                <div class="bg-muted rounded-lg p-3">
+                    <div class="flex space-x-1">
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    </div>
+                </div>
+            `;
+            targetMessages.appendChild(typingDiv);
+            scrollToBottomOf(targetMessages);
+            
+            // Simulate response delay
+            setTimeout(async () => {
+                targetMessages.removeChild(typingDiv);
+                const response = await generateResponse(message);
+                addMessageToContainer(response, 'bot', targetMessages);
+                sendButton.disabled = false;
+                sendButton.textContent = 'Send';
+            }, 1500 + Math.random() * 1000);
+        }
+        
+        function addMessageToContainer(text, sender, container) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start space-x-3';
+            
+            if (sender === 'user') {
+                messageDiv.className += ' justify-end';
+                messageDiv.innerHTML = `
+                    <div class="bg-primary text-black rounded-lg p-3 max-w-xs md:max-w-md">
+                        <p class="text-sm">${escapeHtml(text)}</p>
+                    </div>
+                    <div class="bg-primary text-black rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">U</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="bg-primary text-black rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">🤖</div>
+                    <div class="bg-muted rounded-lg p-3 max-w-xs md:max-w-md">
+                        <p class="text-sm">${escapeHtml(text)}</p>
+                        <div class="flex space-x-2 mt-2">
+                            <button onclick="rateResponse(this, 'helpful')" class="text-xs text-gray-400 hover:text-green-500 transition-colors">👍 Helpful</button>
+                            <button onclick="rateResponse(this, 'not-helpful')" class="text-xs text-gray-400 hover:text-red-500 transition-colors">👎 Not Helpful</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.appendChild(messageDiv);
+            scrollToBottomOf(container);
+        }
+        
+        function scrollToBottomOf(container) {
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function updateFullCharCount() {
+            const fullChatInput = document.getElementById('fullChatInput');
+            const fullCharCount = document.getElementById('fullCharCount');
+            const count = fullChatInput.value.length;
+            fullCharCount.textContent = `${count}/500`;
+        }
+        
         // Event listeners
         chatInput.addEventListener('input', updateCharCount);
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
+            }
+        });
+        
+        // Full chat event listeners
+        const fullChatInput = document.getElementById('fullChatInput');
+        fullChatInput.addEventListener('input', updateFullCharCount);
+        fullChatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendFullChatMessage();
+            }
+        });
+        
+        // Close full chat with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const fullChatScreen = document.getElementById('fullChatScreen');
+                if (!fullChatScreen.classList.contains('hidden')) {
+                    closeFullChat();
+                }
             }
         });
 
