@@ -128,18 +128,21 @@
             padding: 0 20px;
             font-size: 14px;
             font-weight: 600;
-            min-width: 200px;
+            min-width: 220px;
+            gap: 8px;
         }
         
         .ticker-symbol {
             color: #00ff88;
-            margin-right: 8px;
             font-weight: 800;
+            min-width: 35px;
         }
         
         .ticker-price {
             color: #fff;
-            margin-right: 8px;
+            font-weight: 600;
+            min-width: 80px;
+            text-align: right;
         }
         
         .ticker-change {
@@ -181,9 +184,18 @@
             }
             
             .ticker-item {
-                padding: 0 15px;
-                font-size: 12px;
-                min-width: 160px;
+                padding: 0 12px;
+                font-size: 11px;
+                min-width: 140px;
+                gap: 6px;
+            }
+            
+            .ticker-symbol {
+                min-width: 30px;
+            }
+            
+            .ticker-price {
+                min-width: 60px;
             }
             
             .ticker-change {
@@ -645,11 +657,34 @@
                 const changeClass = isPositive ? 'positive' : 'negative';
                 const changeSymbol = isPositive ? '+' : '';
 
+                // Format price based on value
+                let formattedPrice;
+                const price = parseFloat(data.price);
+                if (price >= 1000) {
+                    formattedPrice = '$' + price.toLocaleString('en-US', { 
+                        minimumFractionDigits: 0, 
+                        maximumFractionDigits: 0 
+                    });
+                } else if (price >= 1) {
+                    formattedPrice = '$' + price.toLocaleString('en-US', { 
+                        minimumFractionDigits: 2, 
+                        maximumFractionDigits: 2 
+                    });
+                } else {
+                    formattedPrice = '$' + price.toLocaleString('en-US', { 
+                        minimumFractionDigits: 4, 
+                        maximumFractionDigits: 4 
+                    });
+                }
+
+                // Format change percentage
+                const formattedChange = parseFloat(data.change).toFixed(2);
+
                 return `
                     <div class="ticker-item">
                         <span class="ticker-symbol">${crypto.symbol}</span>
-                        <span class="ticker-price">$${parseFloat(data.price).toLocaleString()}</span>
-                        <span class="ticker-change ${changeClass}">${changeSymbol}${data.change}%</span>
+                        <span class="ticker-price">${formattedPrice}</span>
+                        <span class="ticker-change ${changeClass}">${changeSymbol}${formattedChange}%</span>
                     </div>
                 `;
             }).join('');
