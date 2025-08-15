@@ -76,7 +76,7 @@ function App() {
       if (selectedModel.id === 'gpt-3.5-turbo') {
         // Call real OpenAI API
         const apiUrl = process.env.NODE_ENV === 'production' 
-          ? 'https://gptard.wtf/api/chat'
+          ? 'https://gptard.vercel.app/api/chat'
           : '/api/chat'
         
         const response = await fetch(apiUrl, {
