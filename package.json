@@ -1,0 +1,47 @@
+{
+  "name": "gptard-wtf",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "gptard.wtf - ChatGPT wrapper with 3 different AI agents based on the midcurve meme",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite",
+    "server": "node server.js",
+    "dev:full": "concurrently \"npm run server\" \"npm run dev\""
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^4.36.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "framer-motion": "^10.16.4",
+    "lucide-react": "^0.294.0",
+    "openai": "^3.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "viem": "^1.19.11",
+    "wagmi": "^1.4.12"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.1.0",
+    "autoprefixer": "^10.4.15",
+    "concurrently": "^8.2.2",
+    "postcss": "^8.4.29",
+    "tailwindcss": "^3.3.3",
+    "vite": "^4.4.9"
+  },
+  "keywords": [
+    "chat",
+    "ai",
+    "agents",
+    "midcurve",
+    "meme"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
