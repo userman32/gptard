@@ -1,131 +1,190 @@
-# gptard.wtf 🚀
+# gptard.wtf - All-in-One AI Platform
 
-A Token-Gated Crypto AI Platform where users must hold GPTARD tokens to access AI agents with midcurve meme personalities!
+A luxury AI chat platform with 25+ AI models, crypto payments, and Web3 integration.
 
-## 🎭 The Agents
+## 🚀 Features
 
-### 🐸 Pepe the Degen
-- **Personality**: The OG degen who sees everything as a potential moon mission
-- **Style**: REEEEEE! WAGMI! Diamond hands! 💎🙌
-- **Represents**: The optimistic beginning of the degen journey
-
-### 😢 Wojak the Copium  
-- **Personality**: The eternal optimist who always finds hope in despair
-- **Style**: *sniff* maybe this time it will be different... *copium intensifies*
-- **Represents**: The coping phase when things don't go as planned
-
-### 💪 Chad the Based
-- **Personality**: The gigabrain who knows the truth and spreads wisdom
-- **Style**: Listen here, anon. This is exactly what I've been saying. Wake up sheeple! 🧠
-- **Represents**: The enlightened final stage of the degen journey
-
-## 🎨 Features
-
-- **Token-Gated Access**: Must hold minimum 1,000 GPTARD tokens to access platform
-- **Credit System**: Each AI chat message costs 1 credit (1 credit per 100 tokens held)
-- **AI Chat Agents**: Three midcurve-based personalities for crypto discussions
-- **Web3 Wallet Integration**: Connect your wallet to verify token holdings
-- **Degen/Anime Theme**: Red and black color scheme with glowing effects
-- **Responsive Design**: Works on desktop and mobile devices
-- **Smooth Animations**: Framer Motion powered animations and transitions
-- **Midcurve Theory**: Each agent represents a different stage of the crypto journey
+- **25+ AI Models**: GPT-5, Claude 4, Gemini Ultra, Grok-2, Llama 3, and more
+- **Real AI Integration**: GPT-3.5 Turbo with OpenAI API
+- **Crypto Payments**: SOL/USDC payment system with wallet integration
+- **Web3 Ready**: MetaMask wallet connection
+- **Credit System**: Pay-per-use model with crypto purchases
+- **Luxury UI**: Modern, glass-morphism design with animations
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 18 with Vite
-- **Styling**: Tailwind CSS with custom degen theme
-- **Animations**: Framer Motion
-- **Icons**: Lucide React
-- **Fonts**: Orbitron (anime-style font)
+- **Frontend**: React 18, Vite, Tailwind CSS, Framer Motion
+- **Backend**: Node.js, Express.js
+- **AI**: OpenAI API (GPT-3.5 Turbo)
+- **Web3**: MetaMask integration
+- **Styling**: Luxury glass-morphism design
 
-## 🚀 Getting Started
+## 📦 Installation
 
-### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd midcurve-chat-agents
-```
+# Clone the repository
+git clone <your-repo-url>
+cd gptard.wtf
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
+
+# Set up environment variables
+cp .env.example .env
+# Add your OpenAI API key to .env
 ```
 
-3. Start the development server:
+## 🔧 Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+## 🚀 Development
+
 ```bash
+# Start development server (frontend + backend)
+npm run dev:full
+
+# Start frontend only
 npm run dev
+
+# Start backend only
+npm run server
 ```
 
-4. Open your browser and navigate to `http://localhost:3000`
+## 🌐 Deployment
 
-### Build for Production
+### Option 1: Vercel (Recommended)
 
-```bash
-npm run build
-```
+1. **Install Vercel CLI**:
+   ```bash
+   npm i -g vercel
+   ```
 
-## 🎯 Usage
+2. **Deploy**:
+   ```bash
+   npm run deploy
+   ```
 
-### Token Gate Access
-1. **Connect Wallet**: Click "Connect Wallet" to link your Web3 wallet
-2. **Verify Tokens**: System checks if you hold minimum 1,000 GPTARD tokens
-3. **Get Credits**: Earn credits based on your token holdings (1 credit per 100 tokens)
-4. **Access Platform**: Once verified, access the AI chat platform
+3. **Set Environment Variables**:
+   - Go to Vercel dashboard
+   - Add `OPENAI_API_KEY` environment variable
 
-### AI Chat
-1. **Choose Your Agent**: Select from Pepe, Wojak, or Chad using the agent selector cards
-2. **Monitor Credits**: Keep track of your remaining credits in the header
-3. **Start Chatting**: Type your message and press Enter (costs 1 credit per message)
-4. **Experience Different Personalities**: Each agent responds with their unique crypto perspective
-5. **Switch Agents**: Change agents anytime to get different viewpoints on market conditions
+4. **Custom Domain**:
+   - In Vercel dashboard, go to Settings → Domains
+   - Add your custom domain (gptard.wtf)
+   - Update DNS records as instructed
 
-## 🎨 Customization
+### Option 2: Netlify
 
-### Adding New Agents
-To add a new agent, modify the `AGENTS` array in `src/App.jsx`:
+1. **Build the project**:
+   ```bash
+   npm run build
+   ```
 
-```javascript
-{
-  id: 'new-agent',
-  name: 'New Agent Name',
-  avatar: '🎭',
-  description: 'Agent description',
-  personality: 'new-personality',
-  color: 'from-color-500 to-color-700'
-}
-```
+2. **Deploy to Netlify**:
+   - Drag and drop the `dist` folder to Netlify
+   - Or connect your GitHub repository
 
-Then add corresponding responses in the `generateAgentResponse` function.
+3. **Set Environment Variables**:
+   - Go to Site Settings → Environment Variables
+   - Add `OPENAI_API_KEY`
 
-### Styling
-- Modify colors in `tailwind.config.js`
-- Update animations in `src/App.css`
-- Customize the degen theme in `src/index.css`
+### Option 3: Traditional Web Server
 
-## 🤝 Contributing
+1. **Build the project**:
+   ```bash
+   npm run build
+   ```
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. **Upload files**:
+   - Upload `dist/` folder contents to your web server
+   - Upload `server.js` and `package.json` for backend
 
-## 📝 License
+3. **Install dependencies on server**:
+   ```bash
+   npm install --production
+   ```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+4. **Start the server**:
+   ```bash
+   npm start
+   ```
 
-## 🙏 Acknowledgments
+## 🔗 Domain Configuration
 
-- Inspired by the legendary midcurve meme
-- Built for the degen community
-- Special thanks to all the anons who keep the dream alive
+### For gptard.wtf:
+
+1. **DNS Records**:
+   ```
+   Type: A
+   Name: @
+   Value: [Your server IP]
+   
+   Type: CNAME
+   Name: www
+   Value: gptard.wtf
+   ```
+
+2. **SSL Certificate**:
+   - Use Let's Encrypt for free SSL
+   - Or purchase SSL certificate from your domain provider
+
+## 🎯 Key Features
+
+### AI Models Available:
+- GPT-5, GPT-4 Turbo, GPT-4, GPT-3.5 Turbo
+- Claude 4 Opus, Claude 4 Sonnet, Claude 3 Opus
+- Gemini Ultra, Gemini Pro, Gemini Flash
+- Grok, Grok-2
+- Llama 3 400B, Llama 3 70B
+- Mistral Large, Medium, Small
+- Cohere Command, Command Light
+- Perplexity Sonar, Sonar Small
+- And more...
+
+### Payment System:
+- SOL/USDC payments
+- Credit-based system
+- Real-time pricing
+- Wallet integration
+
+### Security:
+- Wallet verification
+- Payment validation
+- API key protection
+- CORS configuration
+
+## 🚀 Production Checklist
+
+- [ ] Set up environment variables
+- [ ] Configure custom domain
+- [ ] Set up SSL certificate
+- [ ] Test wallet integration
+- [ ] Verify AI model responses
+- [ ] Test payment system
+- [ ] Monitor performance
+- [ ] Set up analytics
+
+## 📞 Support
+
+For issues or questions:
+- Check the console for errors
+- Verify environment variables
+- Test wallet connection
+- Ensure OpenAI API key is valid
+
+## 🔄 Updates
+
+To update the site:
+1. Make your changes
+2. Run `npm run build`
+3. Deploy using your chosen method
+4. Test the live site
 
 ---
 
-**Remember**: This is just a fun project - not financial advice! DYOR! 🚀
+**Built with ❤️ for the crypto AI community**

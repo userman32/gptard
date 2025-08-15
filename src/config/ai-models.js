@@ -305,18 +305,11 @@ export const AI_MODELS = [
 // Supported cryptocurrencies for payment
 export const SUPPORTED_CRYPTO = [
   {
-    symbol: 'ETH',
-    name: 'Ethereum',
-    icon: '🔷',
-    decimals: 18,
-    priceUSD: 2500 // Mock price, would be fetched from API
-  },
-  {
-    symbol: 'BTC',
-    name: 'Bitcoin',
-    icon: '🟡',
-    decimals: 8,
-    priceUSD: 45000 // Mock price
+    symbol: 'SOL',
+    name: 'Solana',
+    icon: '🟣',
+    decimals: 9,
+    priceUSD: 100 // Mock price
   },
   {
     symbol: 'USDC',
@@ -324,20 +317,6 @@ export const SUPPORTED_CRYPTO = [
     icon: '💙',
     decimals: 6,
     priceUSD: 1
-  },
-  {
-    symbol: 'USDT',
-    name: 'Tether',
-    icon: '💚',
-    decimals: 6,
-    priceUSD: 1
-  },
-  {
-    symbol: 'SOL',
-    name: 'Solana',
-    icon: '🟣',
-    decimals: 9,
-    priceUSD: 100 // Mock price
   }
 ]
 

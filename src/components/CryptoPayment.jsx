@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Wallet, CreditCard, Coins, ArrowRight, CheckCircle, AlertCircle, TrendingUp, Bitcoin, Ethereum, Zap } from 'lucide-react'
+import { Wallet, CreditCard, Coins, ArrowRight, CheckCircle, AlertCircle, TrendingUp, Bitcoin, Zap } from 'lucide-react'
 import { SUPPORTED_CRYPTO } from '../config/ai-models'
 
-const CryptoPayment = ({ onPurchaseCredits, userCredits }) => {
+const CryptoPayment = ({ onPurchaseCredits, userCredits, isWalletConnected, walletAddress }) => {
   const [selectedCrypto, setSelectedCrypto] = useState(SUPPORTED_CRYPTO[0])
   const [creditAmount, setCreditAmount] = useState(100)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -18,19 +18,48 @@ const CryptoPayment = ({ onPurchaseCredits, userCredits }) => {
 
   const handlePurchase = async () => {
     setIsProcessing(true)
-    // Simulate crypto payment processing
-    setTimeout(() => {
-      onPurchaseCredits(creditAmount)
+    
+    // Simulate payment verification - in real implementation, this would verify the actual crypto transaction
+    try {
+      // Simulate API call to verify payment
+      const paymentVerification = await simulatePaymentVerification(creditAmount, selectedCrypto)
+      
+      if (paymentVerification.success) {
+        onPurchaseCredits(creditAmount)
+        alert(`Successfully purchased ${creditAmount.toLocaleString()} credits!`)
+      } else {
+        alert('Payment verification failed. Please try again.')
+      }
+    } catch (error) {
+      alert('Payment processing error. Please check your wallet and try again.')
+    } finally {
       setIsProcessing(false)
-    }, 3000)
+    }
   }
+
+  // Simulate payment verification - in real implementation, this would check blockchain for actual transaction
+  const simulatePaymentVerification = async (amount, crypto) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Simulate 90% success rate for demo purposes
+        const isSuccess = Math.random() > 0.1
+        resolve({
+          success: isSuccess,
+          transactionId: isSuccess ? `tx_${Math.random().toString(36).substr(2, 9)}` : null,
+          message: isSuccess ? 'Payment verified' : 'Insufficient funds or transaction failed'
+        })
+      }, 2000)
+    })
+  }
+
+
 
   const presetAmounts = [100, 500, 1000, 5000]
 
   const getCryptoIcon = (symbol) => {
     switch (symbol) {
-      case 'ETH': return <Ethereum className="w-5 h-5" />
-      case 'BTC': return <Bitcoin className="w-5 h-5" />
+      case 'SOL': return <Coins className="w-5 h-5" />
+      case 'USDC': return <Coins className="w-5 h-5" />
       default: return <Coins className="w-5 h-5" />
     }
   }
@@ -44,9 +73,30 @@ const CryptoPayment = ({ onPurchaseCredits, userCredits }) => {
       >
         <h2 className="text-3xl font-bold text-white mb-4 flex items-center justify-center">
           <Coins className="w-8 h-8 mr-3 text-gradient" />
-          Buy Credits with Crypto
+          Buy Credits with SOL/USDC
         </h2>
-        <p className="text-slate-400 text-lg">Purchase credits using your preferred cryptocurrency</p>
+        <p className="text-slate-400 text-lg">Purchase credits using SOL or USDC</p>
+        
+        {/* Token Address Section */}
+        <div className="mt-6 p-4 glass-effect rounded-2xl">
+          <h3 className="text-white font-semibold mb-2">GPTARD Token Address</h3>
+          <div className="flex items-center justify-center space-x-3">
+            <code className="text-blue-400 font-mono text-sm bg-slate-800 px-3 py-2 rounded-lg">
+              GPTARD1234567890abcdef
+            </code>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText('GPTARD1234567890abcdef');
+                alert('Token address copied to clipboard!');
+              }}
+              className="text-slate-400 hover:text-white transition-colors"
+              title="Copy token address"
+            >
+              📋
+            </button>
+          </div>
+          <p className="text-xs text-slate-500 mt-2">Click to copy the token address</p>
+        </div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -101,35 +151,57 @@ const CryptoPayment = ({ onPurchaseCredits, userCredits }) => {
             </div>
           </div>
 
-          {/* Crypto Selection */}
-          <div className="p-6 glass-effect rounded-2xl">
-            <h4 className="text-white font-semibold mb-4">Select Cryptocurrency</h4>
-            <div className="space-y-3">
-              {SUPPORTED_CRYPTO.map((crypto) => (
-                <button
-                  key={crypto.symbol}
-                  onClick={() => setSelectedCrypto(crypto)}
-                  className={`w-full p-4 rounded-xl flex items-center justify-between transition-all duration-300 ${
-                    selectedCrypto.symbol === crypto.symbol
-                      ? 'accent-gradient text-white shadow-lg'
-                      : 'glass-effect text-slate-300 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    {getCryptoIcon(crypto.symbol)}
-                    <div className="text-left">
-                      <div className="font-semibold">{crypto.name}</div>
-                      <div className="text-sm opacity-75">{crypto.symbol}</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-semibold">${crypto.priceUSD.toLocaleString()}</div>
-                    <div className="text-sm opacity-75">per unit</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+                     {/* Wallet Connection */}
+           <div className="p-6 glass-effect rounded-2xl">
+             <h4 className="text-white font-semibold mb-4">Wallet Connection</h4>
+             {!isWalletConnected ? (
+               <div className="text-center">
+                 <p className="text-slate-400 mb-4">Connect your wallet to purchase credits</p>
+                 <p className="text-sm text-slate-500">Go to the Wallet tab to connect MetaMask</p>
+               </div>
+             ) : (
+               <div className="text-center">
+                 <div className="flex items-center justify-center space-x-2 mb-2">
+                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                   <span className="text-green-400 font-medium">Wallet Connected</span>
+                 </div>
+                 <p className="text-slate-400 text-sm font-mono">
+                   {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
+                 </p>
+               </div>
+             )}
+           </div>
+
+           {/* Crypto Selection */}
+           <div className="p-6 glass-effect rounded-2xl">
+             <h4 className="text-white font-semibold mb-4">Select Cryptocurrency</h4>
+             <div className="space-y-3">
+               {SUPPORTED_CRYPTO.map((crypto) => (
+                 <button
+                   key={crypto.symbol}
+                   onClick={() => setSelectedCrypto(crypto)}
+                   disabled={!isWalletConnected}
+                   className={`w-full p-4 rounded-xl flex items-center justify-between transition-all duration-300 ${
+                     selectedCrypto.symbol === crypto.symbol
+                       ? 'accent-gradient text-white shadow-lg'
+                       : 'glass-effect text-slate-300 hover:text-white hover:bg-white/5'
+                   } ${!isWalletConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
+                 >
+                   <div className="flex items-center space-x-3">
+                     {getCryptoIcon(crypto.symbol)}
+                     <div className="text-left">
+                       <div className="font-semibold">{crypto.name}</div>
+                       <div className="text-sm opacity-75">{crypto.symbol}</div>
+                     </div>
+                   </div>
+                   <div className="text-right">
+                     <div className="font-semibold">${crypto.priceUSD.toLocaleString()}</div>
+                     <div className="text-sm opacity-75">per unit</div>
+                   </div>
+                 </button>
+               ))}
+             </div>
+           </div>
         </div>
 
         {/* Payment Summary */}
@@ -165,23 +237,28 @@ const CryptoPayment = ({ onPurchaseCredits, userCredits }) => {
 
           {/* Purchase Button */}
           <div className="p-6 glass-effect rounded-2xl">
-            <button
-              onClick={handlePurchase}
-              disabled={isProcessing || creditAmount <= 0}
-              className="w-full accent-gradient hover:shadow-lg disabled:opacity-50 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center space-x-3 hover-lift"
-            >
-              {isProcessing ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <span>Processing Payment...</span>
-                </>
-              ) : (
-                <>
-                  <Wallet className="w-6 h-6" />
-                  <span>Pay {calculateCryptoAmount(creditAmount)} {selectedCrypto.symbol}</span>
-                </>
-              )}
-            </button>
+                         <button
+               onClick={handlePurchase}
+               disabled={isProcessing || creditAmount <= 0 || !isWalletConnected}
+               className="w-full accent-gradient hover:shadow-lg disabled:opacity-50 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center space-x-3 hover-lift"
+             >
+               {!isWalletConnected ? (
+                 <>
+                   <Wallet className="w-6 h-6" />
+                   <span>Connect Wallet First</span>
+                 </>
+               ) : isProcessing ? (
+                 <>
+                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                   <span>Processing Payment...</span>
+                 </>
+               ) : (
+                 <>
+                   <Wallet className="w-6 h-6" />
+                   <span>Pay {calculateCryptoAmount(creditAmount)} {selectedCrypto.symbol}</span>
+                 </>
+               )}
+             </button>
             <p className="text-xs text-slate-500 mt-3 text-center">
               Payment will be processed securely through your wallet
             </p>
@@ -247,13 +324,13 @@ const CryptoPayment = ({ onPurchaseCredits, userCredits }) => {
             <div className="text-lg font-bold text-white mb-1">Instant Access</div>
             <div className="text-sm text-slate-400">Get immediate access to all 25 AI models without waiting</div>
           </div>
-          <div className="text-center p-4 glass-effect rounded-2xl">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full accent-gradient flex items-center justify-center">
-              <Bitcoin className="w-6 h-6 text-white" />
-            </div>
-            <div className="text-lg font-bold text-white mb-1">Crypto Payments</div>
-            <div className="text-sm text-slate-400">Pay with your preferred cryptocurrency securely</div>
-          </div>
+                     <div className="text-center p-4 glass-effect rounded-2xl">
+             <div className="w-12 h-12 mx-auto mb-3 rounded-full accent-gradient flex items-center justify-center">
+               <Coins className="w-6 h-6 text-white" />
+             </div>
+             <div className="text-lg font-bold text-white mb-1">SOL/USDC Payments</div>
+             <div className="text-sm text-slate-400">Pay with SOL or USDC securely</div>
+           </div>
           <div className="text-center p-4 glass-effect rounded-2xl">
             <div className="w-12 h-12 mx-auto mb-3 rounded-full accent-gradient flex items-center justify-center">
               <Coins className="w-6 h-6 text-white" />

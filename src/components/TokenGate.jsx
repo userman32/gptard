@@ -14,9 +14,9 @@ const TokenGate = ({ onAccessGranted }) => {
       setIsConnecting(false)
       setIsConnected(true)
       setAddress('0x1234...5678')
-      setTimeout(() => {
-        onAccessGranted(100) // Give 100 credits for demo
-      }, 1500)
+                        setTimeout(() => {
+                    onAccessGranted(0) // Start with no credits to test the system
+                  }, 1500)
     }, 2000)
   }
 
@@ -32,7 +32,7 @@ const TokenGate = ({ onAccessGranted }) => {
      if (!isConnected) {
        return 'Connect your wallet for additional features (optional)'
      } else {
-       return 'Wallet Connected! You have 100 credits available.'
+       return 'Wallet Connected! Purchase credits to start chatting.'
      }
    }
 
@@ -54,7 +54,7 @@ const TokenGate = ({ onAccessGranted }) => {
                          <h1 className="text-3xl font-bold text-gradient mb-2">
                gptard.wtf
              </h1>
-             <p className="text-slate-400 text-sm">Luxury AI Platform</p>
+                           <p className="text-slate-400 text-sm">All-in-One AI Platform</p>
           </motion.div>
 
           {/* Status Icon */}
@@ -81,7 +81,7 @@ const TokenGate = ({ onAccessGranted }) => {
                          {address && (
                <div className="text-slate-400 text-sm">
                  <p>Wallet: {address.slice(0, 6)}...{address.slice(-4)}</p>
-                 <p className="text-blue-400 font-semibold">Credits: 100</p>
+                                   <p className="text-blue-400 font-semibold">Credits: 0</p>
                </div>
              )}
           </motion.div>
@@ -131,12 +131,12 @@ const TokenGate = ({ onAccessGranted }) => {
                    )}
                  </button>
                  
-                 <button
-                   onClick={() => onAccessGranted(100)}
-                   className="w-full glass-effect hover:bg-white/10 text-white py-3 px-6 rounded-2xl font-medium transition-all duration-300 flex items-center justify-center"
-                 >
-                   Skip & Continue
-                 </button>
+                                   <button
+                    onClick={() => onAccessGranted(0)}
+                    className="w-full glass-effect hover:bg-white/10 text-white py-3 px-6 rounded-2xl font-medium transition-all duration-300 flex items-center justify-center"
+                  >
+                    Skip & Continue
+                  </button>
                </div>
                          ) : isConnecting ? (
                <div className="w-full glass-effect text-white py-3 px-6 rounded-2xl font-bold flex items-center justify-center">

@@ -5,6 +5,7 @@ import ChatAgent from './components/ChatAgent'
 import AIModelSelector from './components/AIModelSelector'
 import CryptoPayment from './components/CryptoPayment'
 import TokenGate from './components/TokenGate'
+import WalletConnection from './components/WalletConnection'
 import { AI_MODELS } from './config/ai-models'
 import './App.css'
 
@@ -14,8 +15,10 @@ function App() {
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [hasAccess, setHasAccess] = useState(true) // Start with access
-  const [credits, setCredits] = useState(100) // Start with some credits
-  const [activeTab, setActiveTab] = useState('chat') // chat, credits
+  const [credits, setCredits] = useState(0) // Start with no credits to test the system
+  const [activeTab, setActiveTab] = useState('chat') // chat, credits, wallet
+  const [walletAddress, setWalletAddress] = useState('')
+  const [isWalletConnected, setIsWalletConnected] = useState(false)
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
@@ -31,8 +34,24 @@ function App() {
     setHasAccess(true)
   }
 
+  const handleWalletConnected = (address) => {
+    setWalletAddress(address)
+    setIsWalletConnected(true)
+  }
+
+  const handleWalletDisconnected = () => {
+    setWalletAddress('')
+    setIsWalletConnected(false)
+  }
+
   const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading || credits <= 0) return
+    if (!inputMessage.trim() || isLoading) return
+    
+    // Check if user has enough credits
+    if (credits <= 0) {
+      alert('You need credits to send messages. Please purchase credits first.')
+      return
+    }
 
     const userMessage = {
       id: Date.now(),
@@ -269,7 +288,7 @@ function App() {
             gptard.wtf
           </h1>
           <p className="text-slate-300 text-xl font-light">
-            Luxury AI Platform • Powered by Crypto
+            All-in-One AI Platform • Powered by Crypto
           </p>
         </motion.div>
 
@@ -282,43 +301,92 @@ function App() {
         >
           <div className="glass-card p-6 flex items-center space-x-8 luxury-shadow">
             <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
-              <span className="text-white font-semibold text-lg">Credits: {credits.toLocaleString()}</span>
+              <div className={`w-3 h-3 rounded-full animate-pulse ${
+                credits > 0 ? 'bg-gradient-to-r from-blue-500 to-purple-500' : 'bg-red-500'
+              }`}></div>
+              <span className={`font-semibold text-lg ${
+                credits > 0 ? 'text-white' : 'text-red-400'
+              }`}>
+                Credits: {credits.toLocaleString()}
+                {credits <= 0 && <span className="ml-2 text-sm">(No credits - Purchase required)</span>}
+              </span>
             </div>
             
                                 {/* Navigation Tabs */}
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => setActiveTab('chat')}
-                        className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center space-x-2 ${
-                          activeTab === 'chat' 
-                            ? 'accent-gradient text-white shadow-lg' 
-                            : 'text-slate-300 hover:text-white hover:bg-white/5'
-                        }`}
-                      >
-                        <MessageSquare className="w-5 h-5" />
-                        <span>AI Chat</span>
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('credits')}
-                        className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center space-x-2 ${
-                          activeTab === 'credits' 
-                            ? 'accent-gradient text-white shadow-lg' 
-                            : 'text-slate-300 hover:text-white hover:bg-white/5'
-                        }`}
-                      >
-                        <Coins className="w-5 h-5" />
-                        <span>Credits</span>
-                                               </button>
-                                          </div>
+                                                    <div className="flex space-x-2">
+                                  <button
+                                    onClick={() => setActiveTab('chat')}
+                                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center space-x-2 ${
+                                      activeTab === 'chat'
+                                        ? 'accent-gradient text-white shadow-lg'
+                                        : 'text-slate-300 hover:text-white hover:bg-white/5'
+                                    }`}
+                                  >
+                                    <MessageSquare className="w-5 h-5" />
+                                    <span>AI Chat</span>
+                                  </button>
+                                  <button
+                                    onClick={() => setActiveTab('credits')}
+                                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center space-x-2 ${
+                                      activeTab === 'credits'
+                                        ? 'accent-gradient text-white shadow-lg'
+                                        : 'text-slate-300 hover:text-white hover:bg-white/5'
+                                    }`}
+                                  >
+                                    <Coins className="w-5 h-5" />
+                                    <span>Credits</span>
+                                   </button>
+                                   <button
+                                     onClick={() => setActiveTab('wallet')}
+                                     className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center space-x-2 ${
+                                       activeTab === 'wallet'
+                                         ? 'accent-gradient text-white shadow-lg'
+                                         : 'text-slate-300 hover:text-white hover:bg-white/5'
+                                     }`}
+                                   >
+                                     <Wallet className="w-5 h-5" />
+                                     <span>Wallet</span>
+                                   </button>
+                                              </div>
 
-                                     <button
-                          onClick={() => setHasAccess(false)}
-                          className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
-                        >
-                          <Wallet className="w-4 h-4" />
-                          <span className="text-sm font-medium">Connect Wallet</span>
-                        </button>
+                                     {credits <= 0 && (
+                          <button
+                            onClick={() => setActiveTab('credits')}
+                            className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white transition-colors px-4 py-2 rounded-lg font-medium"
+                          >
+                            <Coins className="w-4 h-4" />
+                            <span className="text-sm font-medium">Buy Credits</span>
+                          </button>
+                        )}
+                                                     {isWalletConnected ? (
+                               <div className="flex items-center space-x-2 text-green-400">
+                                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                 <span className="text-sm font-medium">Connected</span>
+                                 <span className="text-xs font-mono">
+                                   {walletAddress.slice(0, 4)}...{walletAddress.slice(-4)}
+                                 </span>
+                               </div>
+                             ) : (
+                               <button
+                                 onClick={() => setActiveTab('wallet')}
+                                 className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
+                               >
+                                 <Wallet className="w-4 h-4" />
+                                 <span className="text-sm font-medium">Connect Wallet</span>
+                               </button>
+                             )}
+                        
+                        {/* Token Address */}
+                        <div className="flex items-center space-x-2 text-slate-400">
+                          <span className="text-sm font-medium">Token:</span>
+                          <button
+                            onClick={() => navigator.clipboard.writeText('GPTARD1234567890abcdef')}
+                            className="text-blue-400 hover:text-blue-300 text-sm font-mono transition-colors"
+                            title="Click to copy token address"
+                          >
+                            GPTARD...f
+                          </button>
+                        </div>
             </div>
          </motion.div>
 
@@ -342,8 +410,20 @@ function App() {
                       <div className="w-16 h-16 mx-auto mb-6 rounded-full accent-gradient flex items-center justify-center">
                         <Bot className="w-8 h-8 text-white" />
                       </div>
-                      <p className="text-xl font-medium mb-2">Start chatting with {selectedModel.name}!</p>
-                      <p className="text-sm text-slate-500">Cost varies by model and message length</p>
+                      <p className="text-xl font-medium mb-2">
+                        {credits > 0 ? `Start chatting with ${selectedModel.name}!` : 'No credits available'}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {credits > 0 ? 'Cost varies by model and message length' : 'Purchase credits to start chatting'}
+                      </p>
+                      {credits <= 0 && (
+                        <button
+                          onClick={() => setActiveTab('credits')}
+                          className="mt-4 accent-gradient hover:shadow-lg text-white px-6 py-3 rounded-xl font-medium transition-all duration-300"
+                        >
+                          Buy Credits Now
+                        </button>
+                      )}
                     </div>
                   )}
                   
@@ -393,14 +473,25 @@ function App() {
           </>
         )}
 
-        {activeTab === 'credits' && (
-          <div className="max-w-5xl mx-auto">
-            <CryptoPayment 
-              onPurchaseCredits={handlePurchaseCredits}
-              userCredits={credits}
-            />
-          </div>
-        )}
+                            {activeTab === 'credits' && (
+                      <div className="max-w-5xl mx-auto">
+                        <CryptoPayment 
+                          onPurchaseCredits={handlePurchaseCredits}
+                          userCredits={credits}
+                          isWalletConnected={isWalletConnected}
+                          walletAddress={walletAddress}
+                        />
+                      </div>
+                    )}
+
+                    {activeTab === 'wallet' && (
+                      <div className="max-w-2xl mx-auto">
+                        <WalletConnection 
+                          onWalletConnected={handleWalletConnected}
+                          onWalletDisconnected={handleWalletDisconnected}
+                        />
+                      </div>
+                    )}
       </div>
     </div>
   )
