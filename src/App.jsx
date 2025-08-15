@@ -75,7 +75,11 @@ function App() {
       // Check if it's GPT-3.5 Turbo - make it actually functional
       if (selectedModel.id === 'gpt-3.5-turbo') {
         // Call real OpenAI API
-        const response = await fetch('/api/chat', {
+        const apiUrl = process.env.NODE_ENV === 'production' 
+          ? 'https://gptard.wtf/api/chat'
+          : '/api/chat'
+        
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
